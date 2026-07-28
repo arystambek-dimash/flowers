@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Открой меня 💌</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<style>
+/* ============ ОФОРМЛЕНИЕ ============ */
+:root{
+  --cream:#fdf6f0;
+  --cream-2:#f8e9e2;
+  --ink:#5b3a44;
+  --ink-soft:#8d6b73;
+  --rose:#e88fa8;
+  --rose-deep:#d16a89;
+  --gold:#c9a227;
+  --shadow:0 18px 50px -18px rgba(150,80,100,.45);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%}
+body{
+  font-family:"Georgia","Times New Roman",serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 700px at 15% -10%, #fff 0%, transparent 60%),
+    radial-gradient(900px 600px at 90% 10%, #fceef2 0%, transparent 55%),
+    linear-gradient(170deg, var(--cream) 0%, var(--cream-2) 100%);
+  background-attachment:fixed;
+  overflow-x:hidden;
+}
+body.locked{overflow:hidden}
+
+/* ---- слой с падающими цветами ---- */
+#petals{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+#petals .fl{position:absolute;top:-22vh;will-change:transform,opacity}
+#petals .fl svg{display:block;width:100%;height:100%;
+  filter:drop-shadow(0 6px 10px rgba(190,110,140,.28))}
+@keyframes fall{
+  from{transform:translate3d(0,-25vh,0) rotate(0deg)}
+  to  {transform:translate3d(0,125vh,0) rotate(var(--spin,220deg))}
+}
+@keyframes sway{
+  0%,100%{transform:translateX(calc(var(--sw,26px) * -1))}
+  50%    {transform:translateX(var(--sw,26px))}
+}
+.fl-outer{animation:sway var(--swayd,5s) ease-in-out infinite}
+
+/* ---- общий каркас ---- */
+.wrap{position:relative;z-index:10;max-width:940px;margin:0 auto;padding:0 20px}
+.scene{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:76px 0;text-align:center}
+h1,h2{font-weight:400;letter-spacing:.02em;margin:0}
+h1{font-size:clamp(2rem,7vw,3.4rem)}
+h2{font-size:clamp(1.5rem,4.6vw,2.3rem)}
+.sub{color:var(--ink-soft);font-size:clamp(.98rem,2.6vw,1.12rem);line-height:1.7;margin:14px auto 0;max-width:34rem}
+.script{font-style:italic;letter-spacing:.03em;color:var(--rose-deep)}
+
+/* ---- кнопка ---- */
+.btn{
+  position:relative;border:0;cursor:pointer;font-family:inherit;
+  font-size:clamp(1.05rem,3.4vw,1.3rem);letter-spacing:.06em;
+  color:#fff;padding:20px 46px;border-radius:999px;
+  background:linear-gradient(135deg,#f2a3b8 0%,var(--rose-deep) 55%,#c05a7d 100%);
+  box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.55);
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s, opacity .5s;
+}
+.btn:hover{transform:translateY(-3px) scale(1.03)}
+.btn:active{transform:translateY(0) scale(.98)}
+.btn.ghost{background:rgba(255,255,255,.82);color:var(--rose-deep);border:1.5px solid #eab9c8;
+  box-shadow:0 8px 22px -12px rgba(150,80,100,.5);padding:14px 32px;font-size:1rem;
+  backdrop-filter:blur(4px)}
+.btn.ghost:hover{background:#fff}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+@keyframes pulse{0%,100%{box-shadow:var(--shadow),0 0 0 0 rgba(209,106,137,.42)}
+  70%{box-shadow:var(--shadow),0 0 0 26px rgba(209,106,137,0)}}
+#openBtn{animation:pulse 2.6s ease-out infinite}
+
+/* ---- появление секций ---- */
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .9s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+.reveal.in{opacity:1;transform:none}
+.hidden{display:none !important}
+
+/* ---- пазл ---- */
+.puzzle-card{background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.95);border-radius:26px;padding:22px;box-shadow:var(--shadow);
+  max-width:426px;margin:0 auto}
+.board-wrap{position:relative;width:min(100%,380px);aspect-ratio:1;margin:0 auto}
+#board{
+  --n:3;
+  display:grid;grid-template-columns:repeat(var(--n),1fr);gap:6px;
+  width:100%;height:100%;
+  background:#f4dbe4;border-radius:18px;padding:6px;transition:gap .5s ease,padding .5s ease,opacity .5s ease .35s;
+  touch-action:manipulation;
+}
+#board.solved{gap:0;padding:0;opacity:0;pointer-events:none}
+.tile{
+  border-radius:10px;background-size:calc(var(--n)*100%) calc(var(--n)*100%);
+  background-repeat:no-repeat;cursor:pointer;position:relative;
+  transition:transform .18s ease,box-shadow .18s ease,border-radius .5s ease,outline-color .18s;
+  outline:3px solid transparent;outline-offset:-3px;
+}
+#board.solved .tile{border-radius:0;cursor:default;box-shadow:none;outline-color:transparent}
+.tile.sel{outline-color:var(--rose-deep);transform:scale(.94);z-index:2;
+  box-shadow:0 10px 24px -8px rgba(180,80,110,.6)}
+.tile:hover:not(.sel){transform:scale(.975)}
+/* цельная картинка, которая проявляется поверх собранного пазла */
+#solvedImg{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  border-radius:18px;opacity:0;transform:scale(.97);pointer-events:none;
+  transition:opacity .7s ease .25s, transform .7s cubic-bezier(.22,1,.36,1) .25s;
+  box-shadow:0 14px 34px -14px rgba(160,80,110,.55)
+}
+#solvedImg.in{opacity:1;transform:none}
+.progress{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.dot{width:9px;height:9px;border-radius:50%;background:#eccdd8;transition:background .4s,transform .4s}
+.dot.on{background:var(--rose-deep);transform:scale(1.35)}
+.puzzle-msg{min-height:1.6em;margin-top:14px;color:var(--rose-deep);font-size:1.05rem}
+
+/* ---- музыка ---- */
+.player{width:min(92vw,560px);margin:26px auto 0;border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.player iframe{display:block;width:100%;height:352px;border:0}
+.vinyl{width:120px;height:120px;margin:0 auto 6px;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#fff 0 12%,#e88fa8 12% 14%,#4a2b35 14% 100%);
+  box-shadow:var(--shadow);animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---- открытка ---- */
+.card-stage{width:min(92vw,520px);margin:64px auto 0}
+.envelope{position:relative;width:100%;aspect-ratio:1.5;cursor:pointer;
+  filter:drop-shadow(0 22px 40px rgba(170,90,120,.35));transition:transform .6s ease}
+.envelope svg{width:100%;height:100%;display:block;overflow:visible}
+.flap{transform-box:fill-box;transform-origin:50% 0;
+  transition:transform 1s cubic-bezier(.62,-0.25,.3,1.3),filter 1s ease}
+.envelope.open .flap{transform:rotateX(180deg);filter:brightness(.94)}
+.envelope.open{transform:translateY(10px)}
+.letter{
+  margin:26px auto 0;max-width:560px;background:linear-gradient(#fffdfb,#fff7f4);
+  border-radius:18px;padding:34px 30px;box-shadow:var(--shadow);
+  border:1px solid #f3e0e6;text-align:left;line-height:1.9;font-size:1.06rem;
+  opacity:0;transform:translateY(26px) scale(.97);transition:all .9s cubic-bezier(.22,1,.36,1)
+}
+.letter.in{opacity:1;transform:none}
+.letter p{margin:0 0 1em}
+.letter .sign{text-align:right;font-size:1.4rem;margin-top:22px}
+.caret{display:inline-block;width:2px;height:1.05em;background:var(--rose-deep);
+  vertical-align:-.16em;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+.hint{margin-top:40px;color:var(--ink-soft);font-size:.92rem;letter-spacing:.14em;text-transform:uppercase}
+.hint span{display:inline-block;animation:bob 2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+.divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,#e5bccb,transparent);margin:34px auto}
+footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9rem}
+input[type=file]{display:none}
+@media (max-width:560px){
+  .scene{padding:54px 0}
+  .board-wrap{width:min(100%,300px)}
+  .puzzle-card{padding:16px}
+  .letter{padding:26px 22px;font-size:1rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s !important;transition-duration:.15s !important}
+}
+</style>
+</head>
+<body class="locked">
+
+<div id="petals"></div>
+
+<!-- ===== 1. ОТКРОЙ МЕНЯ ===== -->
+<section class="scene" id="gate">
+  <div class="wrap">
+    <h1 class="script" style="font-size:clamp(2.4rem,9vw,4.2rem)">для тебя</h1>
+    <p class="sub" style="margin-bottom:38px">Тут кое-что спрятано.<br>Нажми — и увидишь.</p>
+    <button class="btn" id="openBtn">Открой меня 💌</button>
+  </div>
+</section>
+
+<!-- ===== 2. ЦВЕТЫ ===== -->
+<section class="scene hidden" id="bloom">
+  <div class="wrap">
+    <h1 class="script" id="bloomTitle">Это всё тебе 🌸</h1>
+    <p class="sub">Каждый цветок здесь — маленькое «я скучаю».<br>А их тут очень много.</p>
+    <div class="divider"></div>
+    <button class="btn ghost" id="toPuzzle">Дальше →</button>
+    <div class="hint"><span>↓</span></div>
+  </div>
+</section>
+
+<!-- ===== 3. ПАЗЛ ===== -->
+<section class="scene hidden" id="puzzleScene">
+  <div class="wrap reveal">
+    <h2>Собери наше фото</h2>
+    <p class="sub" style="margin-bottom:26px">Нажми на две плитки — они поменяются местами.</p>
+
+    <div class="puzzle-card">
+      <div class="board-wrap">
+        <div id="board" aria-label="Пазл"></div>
+        <img id="solvedImg" alt="">
+      </div>
+      <div class="progress" id="progress"></div>
+      <div class="puzzle-msg" id="puzzleMsg"></div>
+    </div>
+
+    <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+      <button class="btn ghost" id="shuffleBtn">Перемешать</button>
+      <button class="btn ghost" id="uploadBtn">Загрузить свои фото</button>
+      <button class="btn ghost hidden" id="nextPuzzle">Следующее фото →</button>
+      <button class="btn ghost hidden" id="toMusic">К музыке →</button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+  </div>
+</section>
+
+<!-- ===== 4. МУЗЫКА ===== -->
+<section class="scene hidden" id="musicScene">
+  <div class="wrap reveal">
+    <div class="vinyl"></div>
+    <h2>Наша песня</h2>
+    <p class="sub">Включи и не отпускай — дальше читать под неё.</p>
+    <div class="player"><iframe id="spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
+    <p class="sub" style="font-size:.9rem"><a id="spotifyLink" href="#" target="_blank" rel="noopener" style="color:var(--rose-deep)">открыть в Spotify ↗</a></p>
+    <div class="divider"></div>
+    <button class="btn ghost" id="toCard">Открытка →</button>
+  </div>
+</section>
+
+<!-- ===== 5. ОТКРЫТКА ===== -->
+<section class="scene hidden" id="cardScene">
+  <div class="wrap reveal">
+    <h2>И последнее</h2>
+    <p class="sub" id="envHint" style="margin-bottom:28px;transition:opacity .5s">Нажми на конверт.</p>
+    <div class="card-stage">
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Открыть конверт">
+        <svg viewBox="0 0 300 200" overflow="visible">
+          <defs>
+            <linearGradient id="envG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fdeef2"/><stop offset="1" stop-color="#f6d7e0"/>
+            </linearGradient>
+            <linearGradient id="flapG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f9dbe4"/><stop offset="1" stop-color="#eec0cf"/>
+            </linearGradient>
+          </defs>
+          <rect x="4" y="26" width="292" height="168" rx="14" fill="url(#envG)" stroke="#e7bccb"/>
+          <path d="M4 194 L150 104 L296 194 Z" fill="#f9e3ea" stroke="#e7bccb"/>
+          <path class="flap" d="M4 40 Q4 26 18 26 L282 26 Q296 26 296 40 L150 128 Z" fill="url(#flapG)" stroke="#e2b2c4"/>
+          <circle cx="150" cy="122" r="15" fill="#d16a89"/>
+          <text x="150" y="128" font-size="16" text-anchor="middle" fill="#fff">♥</text>
+        </svg>
+      </div>
+    </div>
+    <div class="letter" id="letter">
+      <div id="letterText"></div>
+    </div>
+  </div>
+</section>
+
+<footer>сделано руками, с любовью 💗</footer>
+
+<script>
+/* ============================================================
+   НАСТРОЙКИ — меняй тут
+   ============================================================ */
+const CONFIG = {
+  // Spotify: вставь ID трека или плейлиста.
+  // Ссылку берёшь так: Spotify → Поделиться → Копировать ссылку.
+  spotify: { type: 'track', id: '0tgVpDi06FyKpA1z0VMD4v' },   // type: 'track' | 'playlist' | 'album'
+
+  // Фото для пазла. Положи файлы в папку photos/ рядом с index.html.
+  // Если файла нет — подставится нарисованная картинка-заглушка.
+  photos: ['photos/1.jpg', 'photos/2.jpg', 'photos/3.jpg'],
+
+  // Текст открытки. Каждая строка — абзац.
+  letter: [
+    'Привет, моя хорошая.',
+    'Я долго думал, как сказать это красиво, и в итоге просто собрал всё, что у меня есть: цветы, наши фотографии, песню, которую я слушаю и вспоминаю тебя.',
+    'Спасибо, что ты есть. За то, что с тобой обычные дни перестают быть обычными.',
+    'Я тебя очень люблю.'
+  ],
+  signature: 'твой ♥'
+};
+
+/* ============================================================
+   ЦВЕТЫ — рисуются векторно, каждый уникальный
+   ============================================================ */
+const rnd  = (a,b) => a + Math.random()*(b-a);
+const pick = arr => arr[Math.floor(Math.random()*arr.length)];
+let uid = 0;
+
+// палитры: розовые, лиловые, кремовые — как на референсе
+const PALETTES = [
+  { h:[344,354], s:[55,78], l:[70,86] },  // нежно-розовый
+  { h:[330,344], s:[60,80], l:[62,76] },  // насыщенная роза
+  { h:[300,325], s:[38,58], l:[74,88] },  // лиловый
+  { h:[  8, 18], s:[55,75], l:[76,90] },  // персиковый
+  { h:[350,360], s:[25,45], l:[86,94] }   // почти белый
+];
+
+function petalPath(w,h,tip){
+  // лепесток «вверх» из точки (0,0)
+  return `M0,0 C${w},${-h*0.28} ${w*tip},${-h*0.92} 0,${-h} `
+       + `C${-w*tip},${-h*0.92} ${-w},${-h*0.28} 0,0 Z`;
+}
+
+function buildFlower(){
+  const p = pick(PALETTES);
+  const hue = rnd(p.h[0], p.h[1]);
+  const sat = rnd(p.s[0], p.s[1]);
+  const lit = rnd(p.l[0], p.l[1]);
+  const c  = (dl=0, ds=0) => `hsl(${hue.toFixed(0)} ${Math.min(96,sat+ds).toFixed(0)}% ${Math.max(28,Math.min(97,lit+dl)).toFixed(0)}%)`;
+
+  const type = pick(['peony','peony','rose','anemone','zinnia','blossom','ranunculus']);
+  const id = 'g' + (uid++);
+  const R = 50;                       // радиус в системе viewBox 0 0 100 100
+  let petals = '', center = '';
+
+  const grad = `
+    <radialGradient id="${id}" cx="50%" cy="50%" r="52%">
+      <stop offset="0"   stop-color="${c(-16,10)}"/>
+      <stop offset=".42" stop-color="${c(-4)}"/>
+      <stop offset="1"   stop-color="${c(+10,-6)}"/>
+    </radialGradient>
+    <radialGradient id="${id}c" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="${c(+16,-25)}"/>
+      <stop offset="1" stop-color="${c(-22,15)}"/>
+    </radialGradient>`;
+
+  const ring = (n, len, wid, tip, rot, op) => {
+    let s = '';
+    for (let i=0;i<n;i++){
+      const a = rot + i*360/n + rnd(-3,3);
+      s += `<path d="${petalPath(wid,len,tip)}" transform="rotate(${a.toFixed(1)})" opacity="${op}"/>`;
+    }
+    return s;
+  };
+
+  if (type === 'peony' || type === 'ranunculus'){
+    const rings = type==='peony' ? 4 : 5;
+    for (let r=0;r<rings;r++){
+      const k = 1 - r*(type==='peony' ? .19 : .16);
+      petals += ring(Math.round(rnd(7,10)+r), R*k, R*0.42*k, rnd(.55,.8),
+                     r*rnd(14,26), (0.82+r*0.04).toFixed(2));
+    }
+    center = `<circle r="${R*0.13}" fill="url(#${id}c)"/>`;
+  }
+  else if (type === 'rose'){
+    // спираль лепестков
+    const n = Math.round(rnd(16,22));
+    for (let i=0;i<n;i++){
+      const k = 1 - i/n*0.72;
+      const a = i*137.5;
+      petals += `<path d="${petalPath(R*0.4*k, R*k, .62)}" transform="rotate(${a.toFixed(1)})" opacity="${(0.7+0.3*k).toFixed(2)}"/>`;
+    }
+    center = `<circle r="${R*0.07}" fill="${c(-18,12)}"/>`;
+  }
+  else if (type === 'anemone'){
+    petals += ring(Math.round(rnd(6,9)), R*0.98, R*0.5, .8, rnd(0,40), '.95');
+    petals += ring(Math.round(rnd(5,7)), R*0.7,  R*0.4, .78, rnd(20,60), '.9');
+    let st = '';
+    for (let i=0;i<26;i++){
+      const a = i*360/26, rr = R*0.3;
+      st += `<circle cx="${(Math.cos(a*Math.PI/180)*rr).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*rr).toFixed(1)}" r="${rnd(1.1,1.9).toFixed(1)}" fill="#5c3550" opacity=".8"/>`;
+    }
+    center = `<circle r="${R*0.24}" fill="#6b3a5c"/><circle r="${R*0.12}" fill="#d8e07a"/>${st}`;
+  }
+  else if (type === 'zinnia'){
+    petals += ring(Math.round(rnd(12,17)), R, R*0.19, .95, 0, '.95');
+    petals += ring(Math.round(rnd(10,14)), R*0.72, R*0.16, .95, 13, '.9');
+    center = `<circle r="${R*0.2}" fill="#f0a93c"/><circle r="${R*0.11}" fill="#e8c25a"/>`;
+  }
+  else { // blossom
+    petals += ring(5, R, R*0.56, .92, rnd(0,72), '.96');
+    center = `<circle r="${R*0.14}" fill="${c(+14,-20)}"/>`;
+    for (let i=0;i<7;i++){
+      const a=i*360/7;
+      center += `<circle cx="${(Math.cos(a*Math.PI/180)*R*0.2).toFixed(1)}" cy="${(Math.sin(a*Math.PI/180)*R*0.2).toFixed(1)}" r="1.6" fill="#c9973f"/>`;
+    }
+  }
+
+  return `<svg viewBox="-52 -52 104 104" xmlns="http://www.w3.org/2000/svg">
+    <defs>${grad}</defs>
+    <g fill="url(#${id})" stroke="${c(-12,8)}" stroke-width=".45" stroke-opacity=".35">${petals}</g>
+    <g>${center}</g>
+  </svg>`;
+}
+
+const layer = document.getElementById('petals');
+
+function dropFlower({size, dur, delay=0, loop=false, opacity=1}={}){
+  const outer = document.createElement('div');
+  outer.className = 'fl';
+  const s = size ?? rnd(38, 118);
+  outer.style.cssText =
+    `left:${rnd(-6,100)}vw;width:${s}px;height:${s}px;opacity:${opacity};` +
+    `--spin:${rnd(-420,420)}deg;` +
+    `animation:fall ${dur}s linear ${delay}s ${loop?'infinite':'forwards'};`;
+  const inner = document.createElement('div');
+  inner.className = 'fl-outer';
+  inner.style.cssText = `width:100%;height:100%;--sw:${rnd(14,60)}px;--swayd:${rnd(3.2,7)}s;`;
+  inner.innerHTML = buildFlower();
+  outer.appendChild(inner);
+  layer.appendChild(outer);
+  if (!loop) setTimeout(()=>outer.remove(), (dur+delay)*1000 + 200);
+  return outer;
+}
+
+// шквал цветов при открытии
+function flowerStorm(count=110, spread=5.2){
+  for (let i=0;i<count;i++){
+    dropFlower({ dur: rnd(4.2,8.5), delay: Math.pow(Math.random(),1.35)*spread });
+  }
+}
+// фоновый «дождик», идёт всегда
+function ambientRain(n=16, op=.62){
+  for (let i=0;i<n;i++){
+    const f = dropFlower({ size: rnd(26,66), dur: rnd(11,20), delay: -rnd(0,20), loop:true, opacity:op });
+    if (Math.random() < .45) f.style.filter = `blur(${rnd(.8,2.4).toFixed(1)}px)`;
+  }
+}
+// маленький салют вокруг центра экрана
+function burst(n=26){
+  for (let i=0;i<n;i++) dropFlower({ size: rnd(30,80), dur: rnd(3,5.5), delay: Math.random()*.7 });
+}
+
+// пара цветов летит ещё до нажатия — чтобы экран не был пустым
+ambientRain(7, .3);
+
+/* ============================================================
+   НАВИГАЦИЯ ПО СЦЕНАМ
+   ============================================================ */
+function show(id, scroll=true){
+  const el = document.getElementById(id);
+  el.classList.remove('hidden');
+  const rv = el.querySelector('.reveal');
+  requestAnimationFrame(()=> rv && rv.classList.add('in'));
+  if (scroll) setTimeout(()=> el.scrollIntoView({behavior:'smooth', block:'start'}), 60);
+}
+
+document.getElementById('openBtn').addEventListener('click', e => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  btn.style.opacity = '0';
+  btn.style.transform = 'scale(.8)';
+  document.body.classList.remove('locked');
+  flowerStorm(120);
+  ambientRain();
+  setTimeout(()=>{
+    document.getElementById('gate').classList.add('hidden');
+    show('bloom', false);
+    document.getElementById('bloom').querySelector('.wrap')
+      .animate([{opacity:0,transform:'translateY(30px)'},{opacity:1,transform:'none'}],
+               {duration:900, easing:'cubic-bezier(.22,1,.36,1)'});
+  }, 2400);
+});
+
+document.getElementById('toPuzzle').addEventListener('click', ()=>{ show('puzzleScene'); startPuzzle(0); });
+document.getElementById('toMusic').addEventListener('click', ()=> show('musicScene'));
+document.getElementById('toCard').addEventListener('click',  ()=> show('cardScene'));
+
+/* ============================================================
+   ПАЗЛ
+   ============================================================ */
+const N = 3;                                  // сетка 3x3
+const board   = document.getElementById('board');
+const msgEl   = document.getElementById('puzzleMsg');
+const progEl  = document.getElementById('progress');
+let sources   = [];       // готовые url картинок
+let current   = 0;        // индекс текущего фото
+let order     = [];       // order[позиция] = номер куска
+let selected  = null;
+let solvedSet = new Set();
+
+// заглушка, если фото ещё не добавлены
+function placeholder(i){
+  const hues = [[342,320],[350,15],[318,290]][i % 3];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+    <defs>
+      <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="hsl(${hues[0]} 62% 84%)"/>
+        <stop offset="1" stop-color="hsl(${hues[1]} 55% 72%)"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="400" fill="url(#bg)"/>
+    ${Array.from({length:26},(_,k)=>{
+      const x=(k*97)%400, y=(k*151)%400, r=8+(k*13)%26;
+      return `<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" opacity="${(0.10+(k%5)*0.04).toFixed(2)}"/>`;
+    }).join('')}
+    <path d="M200 292c-8 0-96-56-96-122 0-34 26-58 56-58 18 0 32 9 40 22 8-13 22-22 40-22 30 0 56 24 56 58 0 66-88 122-96 122z"
+          fill="#fff" opacity=".92"/>
+    <text x="200" y="352" font-family="Georgia,serif" font-size="22" fill="#fff" text-anchor="middle" opacity=".95">фото ${i+1}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// пробуем загрузить файл, иначе — заглушка
+function resolveSrc(path, i){
+  return new Promise(res => {
+    const img = new Image();
+    img.onload  = () => res(path);
+    img.onerror = () => res(placeholder(i));
+    img.src = path;
+  });
+}
+
+function renderProgress(){
+  progEl.innerHTML = sources.map((_,i)=>
+    `<div class="dot${solvedSet.has(i)?' on':''}"></div>`).join('');
+}
+
+function shuffled(n){
+  let a;
+  do {
+    a = [...Array(n).keys()];
+    for (let i=n-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  } while (a.every((v,i)=>v===i));
+  return a;
+}
+
+function paint(){
+  board.style.setProperty('--n', N);
+  board.innerHTML = '';
+  order.forEach((piece, pos) => {
+    const t = document.createElement('div');
+    t.className = 'tile';
+    t.dataset.pos = pos;
+    const col = piece % N, row = Math.floor(piece / N);
+    t.style.backgroundImage = `url("${sources[current]}")`;
+    t.style.backgroundPosition = `${col*100/(N-1)}% ${row*100/(N-1)}%`;
+    t.addEventListener('click', ()=> tap(pos));
+    board.appendChild(t);
+  });
+}
+
+function tap(pos){
+  if (board.classList.contains('solved')) return;
+  const tiles = [...board.children];
+  if (selected === null){
+    selected = pos; tiles[pos].classList.add('sel'); return;
+  }
+  if (selected === pos){
+    selected = null; tiles[pos].classList.remove('sel'); return;
+  }
+  [order[selected], order[pos]] = [order[pos], order[selected]];
+  const keep = selected; selected = null;
+  paint();
+  [keep,pos].forEach(p=>{
+    board.children[p].animate([{transform:'scale(.86)'},{transform:'scale(1)'}],
+      {duration:260, easing:'cubic-bezier(.34,1.56,.64,1)'});
+  });
+  check();
+}
+
+function check(){
+  if (!order.every((v,i)=>v===i)) return;
+  const img = document.getElementById('solvedImg');
+  img.src = sources[current];
+  img.classList.add('in');
+  board.classList.add('solved');
+  solvedSet.add(current);
+  renderProgress();
+  msgEl.textContent = pick(['Вот она 💗','Идеально ✨','Ты справилась 🌸','Наше фото собрано ♥']);
+  burst(30);
+  document.getElementById('shuffleBtn').classList.add('hidden');
+  if (solvedSet.size >= sources.length){
+    document.getElementById('nextPuzzle').classList.add('hidden');
+    const b = document.getElementById('toMusic');
+    b.classList.remove('hidden');
+    msgEl.textContent = 'Все фото собраны 💗';
+  } else {
+    document.getElementById('nextPuzzle').classList.remove('hidden');
+  }
+}
+
+async function startPuzzle(i){
+  if (!sources.length){
+    msgEl.textContent = 'Загружаю…';
+    sources = await Promise.all(CONFIG.photos.map((p,k)=>resolveSrc(p,k)));
+  }
+  current = i;
+  order = shuffled(N*N);
+  selected = null;
+  board.classList.remove('solved');
+  document.getElementById('solvedImg').classList.remove('in');
+  msgEl.textContent = '';
+  document.getElementById('shuffleBtn').classList.remove('hidden');
+  document.getElementById('nextPuzzle').classList.add('hidden');
+  renderProgress();
+  paint();
+}
+
+document.getElementById('shuffleBtn').addEventListener('click', ()=>{
+  order = shuffled(N*N); selected = null; paint();
+});
+document.getElementById('nextPuzzle').addEventListener('click', ()=>{
+  let next = (current+1) % sources.length;
+  let guard = 0;
+  while (solvedSet.has(next) && guard++ < sources.length) next = (next+1) % sources.length;
+  startPuzzle(next);
+});
+document.getElementById('uploadBtn').addEventListener('click', ()=> document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', e => {
+  const files = [...e.target.files].slice(0,6);
+  if (!files.length) return;
+  sources   = files.map(f => URL.createObjectURL(f));
+  solvedSet = new Set();
+  document.getElementById('toMusic').classList.add('hidden');
+  startPuzzle(0);
+});
+
+/* ============================================================
+   МУЗЫКА
+   ============================================================ */
+(function music(){
+  const {type,id} = CONFIG.spotify;
+  document.getElementById('spotify').src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
+  document.getElementById('spotifyLink').href = `https://open.spotify.com/${type}/${id}`;
+})();
+
+/* ============================================================
+   ОТКРЫТКА
+   ============================================================ */
+const env = document.getElementById('envelope');
+let opened = false;
+
+function openCard(){
+  if (opened) return;
+  opened = true;
+  env.classList.add('open');
+  document.getElementById('envHint').style.opacity = '0';
+  burst(24);
+  setTimeout(()=>{
+    document.getElementById('letter').classList.add('in');
+    typeLetter();
+  }, 620);
+}
+env.addEventListener('click', openCard);
+env.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' '){ e.preventDefault(); openCard(); }});
+
+function typeLetter(){
+  const host = document.getElementById('letterText');
+  host.innerHTML = '';
+  let pi = 0;
+  const nextPara = () => {
+    if (pi >= CONFIG.letter.length){
+      const sign = document.createElement('div');
+      sign.className = 'sign script';
+      sign.textContent = CONFIG.signature;
+      host.appendChild(sign);
+      sign.animate([{opacity:0},{opacity:1}], {duration:700, fill:'forwards'});
+      setTimeout(()=>burst(18), 300);
+      return;
+    }
+    const text = CONFIG.letter[pi++];
+    const p = document.createElement('p');
+    const span = document.createElement('span');
+    const caret = document.createElement('span');
+    caret.className = 'caret';
+    p.append(span, caret);
+    host.appendChild(p);
+    let ci = 0;
+    const tick = setInterval(()=>{
+      span.textContent = text.slice(0, ++ci);
+      if (ci >= text.length){
+        clearInterval(tick);
+        caret.remove();
+        setTimeout(nextPara, 420);
+      }
+    }, 26);
+  };
+  nextPara();
+}
+</script>
+</body>
+</html>
