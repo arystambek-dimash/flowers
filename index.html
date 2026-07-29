@@ -32,10 +32,41 @@ body{
 body.locked{overflow:hidden}
 
 /* ---- слои с цветами ---- */
-#fx,#blooms,#garden{position:fixed;pointer-events:none;overflow:hidden}
+#fx,#blooms,#garden,#bugs{position:fixed;pointer-events:none;overflow:hidden}
 #fx{inset:0;z-index:5}
 #blooms{inset:0;z-index:6}
-#garden{left:0;right:0;bottom:0;height:min(56vh,440px);z-index:6}
+#garden{left:0;right:0;bottom:0;height:min(46vh,370px);z-index:6}
+#bugs{inset:0;z-index:8}
+
+/* ---- земля, трава ---- */
+.ground{position:absolute;left:0;right:0;bottom:0;height:min(20vh,150px);
+  background:linear-gradient(to top,rgba(146,186,132,.34),rgba(150,190,140,.10) 55%,transparent);
+  opacity:0;transition:opacity 2s ease}
+#grass{position:absolute;left:-2%;bottom:-1px;width:104%;height:min(26vh,190px);
+  opacity:0;transition:opacity 2s ease}
+.garden-on .ground,.garden-on #grass{opacity:1}
+.blade{transform-box:fill-box;transform-origin:50% 100%;
+  animation:sway var(--sd,5s) ease-in-out infinite alternate;animation-delay:var(--sdl,0s)}
+@keyframes sway{from{transform:rotate(calc(var(--sa,4deg) * -1))}to{transform:rotate(var(--sa,4deg))}}
+
+/* ---- бабочки и пчёлы ---- */
+.bug{position:absolute;top:0;left:0;will-change:transform;
+  animation:bugx var(--dx,38s) linear infinite;animation-delay:var(--dl,0s)}
+.bug.rev{animation-name:bugxr}
+.bug .bugy{animation:bugy var(--dy,6s) ease-in-out infinite alternate;animation-delay:var(--dl2,0s)}
+.bug .tilt{animation:tilt calc(var(--dy,6s) * .5) ease-in-out infinite alternate}
+.bug .flip{display:block}
+.bug.rev .flip{transform:scaleX(-1)}
+.bug svg{display:block;width:var(--w,54px);height:auto;
+  filter:drop-shadow(0 6px 10px rgba(150,90,120,.22))}
+@keyframes bugx {from{transform:translate3d(-16vw,0,0)} to{transform:translate3d(116vw,0,0)}}
+@keyframes bugxr{from{transform:translate3d(116vw,0,0)} to{transform:translate3d(-16vw,0,0)}}
+@keyframes bugy {from{transform:translateY(var(--y0,22vh))} to{transform:translateY(var(--y1,62vh))}}
+@keyframes tilt {from{transform:rotate(-11deg)} to{transform:rotate(11deg)}}
+.wing{transform-box:fill-box;transform-origin:100% 60%;
+  animation:flap var(--fl,.3s) ease-in-out infinite alternate}
+.wing.r{transform-origin:0% 60%}
+@keyframes flap{from{transform:scaleX(1)}to{transform:scaleX(.38)}}
 
 /* готовая текстура цветка для сцен на HTML (сад, распускающиеся) */
 .ftex{width:100%;height:100%;background-size:contain;background-position:center;
@@ -49,6 +80,17 @@ body.locked{overflow:hidden}
   55% {transform:translate(-50%,-50%) scale(1.16) rotate(8deg);  opacity:1}
   70% {transform:translate(-50%,-50%) scale(1)    rotate(0deg);  opacity:1}
   100%{transform:translate(-50%,-58%) scale(1.02) rotate(6deg);  opacity:0}
+}
+
+/* --- сердечки, взлетающие в финале --- */
+.fheart{position:absolute;bottom:-50px;opacity:0;will-change:transform,opacity;
+  animation:heart-up var(--hd,7s) linear forwards;
+  filter:drop-shadow(0 6px 12px rgba(190,90,130,.3))}
+@keyframes heart-up{
+  0%  {transform:translateY(0) scale(.55) rotate(0);opacity:0}
+  12% {opacity:1}
+  85% {opacity:.9}
+  100%{transform:translateY(-118vh) scale(1.12) rotate(var(--hr,20deg));opacity:0}
 }
 
 /* --- растущие из земли цветы --- */
@@ -78,8 +120,9 @@ body.locked{overflow:hidden}
   padding:76px 0;text-align:center}
 h1,h2{font-weight:400;letter-spacing:.02em;margin:0}
 h1{font-size:clamp(2rem,7vw,3.4rem)}
+h1,h2{text-shadow:0 2px 16px rgba(255,255,255,.9)}
 h2{font-size:clamp(1.5rem,4.6vw,2.3rem)}
-.sub{color:var(--ink-soft);font-size:clamp(.98rem,2.6vw,1.12rem);line-height:1.7;margin:14px auto 0;max-width:34rem}
+.sub{color:var(--ink-soft);text-shadow:0 1px 12px rgba(255,255,255,.95);font-size:clamp(.98rem,2.6vw,1.12rem);line-height:1.7;margin:14px auto 0;max-width:34rem}
 .script{font-style:italic;letter-spacing:.03em;color:var(--rose-deep)}
 
 /* ---- кнопка ---- */
@@ -238,33 +281,106 @@ h2{font-size:clamp(1.5rem,4.6vw,2.3rem)}
 .sp-link{display:inline-block;margin:12px 4px 2px;color:var(--rose-deep);font-size:.9rem}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ---- диалог ---- */
-.chat{max-width:520px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:12px;
-  max-height:min(62svh,520px);overflow-y:auto;overscroll-behavior:contain;
-  background:rgba(255,255,255,.78);backdrop-filter:blur(8px);border:1px solid #f4e2e8;
-  border-radius:24px;padding:18px 16px;box-shadow:var(--shadow);scrollbar-width:thin}
-.msg{display:flex;gap:10px;align-items:flex-end;opacity:0;transform:translateY(14px) scale(.96);
-  animation:msg-in .45s cubic-bezier(.34,1.4,.64,1) forwards}
-@keyframes msg-in{to{opacity:1;transform:none}}
-.msg.me{flex-direction:row-reverse}
-.msg .who{width:32px;height:32px;flex:0 0 32px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;font-size:1rem;background:#f6dde5}
-.msg.me .who{background:#e4ecf7}
-.bubble{max-width:74%;padding:11px 15px;border-radius:20px;line-height:1.5;font-size:1rem;
-  box-shadow:0 6px 16px -10px rgba(140,80,105,.5)}
-.msg.her .bubble{background:#fff;border:1px solid #f2dfe6;border-bottom-left-radius:6px}
-.msg.me  .bubble{background:linear-gradient(135deg,#f2a3b8,#d16a89);color:#fff;border-bottom-right-radius:6px}
-.typing{display:flex;gap:4px;padding:14px 16px}
-.typing i{width:7px;height:7px;border-radius:50%;background:#d7b3c0;display:block;
-  animation:dots 1.1s ease-in-out infinite}
-.typing i:nth-child(2){animation-delay:.15s}
-.typing i:nth-child(3){animation-delay:.3s}
-@keyframes dots{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+/* ============ ИСТОРИЯ В КАДРАХ ============ */
+.stage-frame{position:relative;max-width:820px;margin:0 auto;border-radius:30px;padding:12px;
+  background:linear-gradient(160deg,rgba(255,255,255,.94),rgba(255,243,247,.9));
+  border:1px solid #f2dbe4;box-shadow:var(--shadow);overflow:hidden}
+.stage{position:relative;width:100%;aspect-ratio:900/470;border-radius:22px;overflow:hidden}
+.stage svg.scene-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* реплики — не пузыри мессенджера, а подписи к кадру */
+.say{position:absolute;max-width:44%;padding:10px 15px;border-radius:20px;z-index:2;
+  font-size:clamp(.82rem,2.3vw,1.02rem);line-height:1.42;pointer-events:none;
+  opacity:0;transform:translateY(10px) scale(.95);
+  transition:opacity .5s ease,transform .5s cubic-bezier(.34,1.45,.64,1)}
+.say.on{opacity:1;transform:none}
+.say.boy {left:3.5%;top:7%;background:#fff;color:var(--ink);
+  border:1px solid #e7dbea;box-shadow:0 12px 26px -16px rgba(120,80,140,.8);
+  border-bottom-left-radius:7px}
+.say.girl{right:3.5%;top:7%;color:#fff;border-bottom-right-radius:7px;
+  background:linear-gradient(135deg,#f7aec2,#e0799c);
+  box-shadow:0 12px 26px -14px rgba(200,90,130,.85)}
+
+/* подпись под кадром — «голос рассказчика» */
+.cap{margin:16px auto 0;max-width:34rem;min-height:3.1em;
+  font-style:italic;color:var(--ink-soft);line-height:1.6;
+  font-size:clamp(.98rem,2.8vw,1.14rem);text-shadow:0 1px 12px rgba(255,255,255,.95);
+  opacity:0;transform:translateY(8px);transition:opacity .55s ease,transform .55s ease}
+.cap.on{opacity:1;transform:none}
+
+/* точки-кадры */
+.beats{display:flex;gap:7px;justify-content:center;margin-top:16px}
+.beats i{width:7px;height:7px;border-radius:50%;background:#eccdd9;display:block;
+  transition:width .4s ease,background .4s ease}
+.beats i.on{width:22px;background:var(--rose-deep)}
+
+/* фигурки */
+.fig{transition:transform 1.5s cubic-bezier(.22,1,.36,1),opacity .9s ease}
+.fig .sway{animation:breathe 3.8s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3.5px)}}
+.fig .limb{fill:none;stroke-linecap:round}
+.fig .leg{transform-box:fill-box;transform-origin:50% 0}
+.fig.walk .legA{animation:step .52s ease-in-out infinite}
+.fig.walk .legB{animation:step .52s ease-in-out infinite reverse}
+@keyframes step{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-15deg)}}
+.fig.walk .sway{animation:breathe .52s ease-in-out infinite}
+/* «тормоз»: стоит и мелко вздрагивает */
+.fig.frozen .sway{animation:stutter 3.4s ease-in-out infinite}
+@keyframes stutter{0%,84%,100%{transform:translate(0,0) rotate(0)}
+  88%{transform:translate(1.5px,0) rotate(-1.6deg)}
+  94%{transform:translate(-1.5px,0) rotate(1.6deg)}}
+.prop{opacity:0;transition:opacity .7s ease,transform .9s cubic-bezier(.22,1,.36,1)}
+.prop.on{opacity:1}
+#notif{transform:translate(0,-26px) scale(.9)}
+#notif.on{transform:none;animation:nudge 2.6s ease-in-out infinite 1s}
+@keyframes nudge{0%,88%,100%{transform:translate(0,0)}92%{transform:translate(0,-5px)}}
+#sweat.on{animation:drip 2.4s ease-in-out infinite}
+@keyframes drip{0%,60%{transform:translate(0,0);opacity:1}100%{transform:translate(2px,17px);opacity:0}}
+.thought i{animation:blip 1.5s ease-in-out infinite}
+.thought i:nth-child(2){animation-delay:.22s}
+.thought i:nth-child(3){animation-delay:.44s}
+@keyframes blip{0%,70%,100%{opacity:.35}35%{opacity:1}}
+.mini-heart{animation:rise var(--rd,4.4s) ease-out infinite;animation-delay:var(--rdl,0s);
+  transform-box:fill-box;transform-origin:50% 50%}
+@keyframes rise{0%{transform:translateY(10px) scale(.4);opacity:0}
+  18%{opacity:.95}70%{opacity:.8}100%{transform:translateY(-96px) scale(1.05);opacity:0}}
+.twinkle{animation:tw 2.6s ease-in-out infinite;animation-delay:var(--td,0s)}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.cloud{animation:cloudy var(--cd,46s) linear infinite;animation-delay:var(--cdl,0s)}
+@keyframes cloudy{from{transform:translateX(-140px)}to{transform:translateX(1040px)}}
+
+/* ============ СЕРДЦЕ, КОТОРОЕ НАДО РАЗБИТЬ ============ */
+.heart-wrap{position:relative;width:min(78vw,340px);margin:6px auto 0;cursor:pointer;
+  transition:opacity .5s ease,transform .5s ease}
+.heart-wrap svg{display:block;width:100%;height:auto;overflow:visible}
+.heart-wrap.gone{opacity:0;transform:scale(.9);pointer-events:none;position:absolute;left:-9999px}
+#heartWhole{transform-box:fill-box;transform-origin:50% 55%;
+  animation:beat 1.9s ease-in-out infinite}
+.heart-wrap:hover #heartWhole{animation-duration:1.1s}
+.heart-wrap.cracking #heartWhole{animation:shake .5s ease-in-out}
+@keyframes shake{0%,100%{transform:translate(0,0) rotate(0)}
+  15%{transform:translate(-5px,0) rotate(-2.5deg)}40%{transform:translate(6px,0) rotate(2.5deg)}
+  65%{transform:translate(-4px,0) rotate(-1.6deg)}85%{transform:translate(3px,0) rotate(1deg)}}
+#cracks path{stroke:#fff;stroke-width:2.6;fill:none;stroke-linecap:round;opacity:.85;
+  stroke-dasharray:var(--l,200);stroke-dashoffset:var(--l,200)}
+.heart-wrap.cracking #cracks path{animation:crack .45s ease-out forwards;
+  animation-delay:var(--cd2,0s)}
+@keyframes crack{to{stroke-dashoffset:0}}
+.tap-hint{margin-top:14px;color:var(--rose-deep);letter-spacing:.12em;font-size:.9rem;
+  text-transform:uppercase;animation:bob 2s ease-in-out infinite;
+  text-shadow:0 1px 12px rgba(255,255,255,.98)}
+.heart-note{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:clamp(1rem,3.4vw,1.3rem);letter-spacing:.06em;text-shadow:0 2px 10px rgba(150,40,80,.5);
+  pointer-events:none;opacity:.92}
 
 /* ---- финальный вопрос ---- */
+@keyframes msg-in{to{opacity:1;transform:none}}
 .ask-card{max-width:520px;margin:0 auto;padding:40px 30px;border-radius:28px;
   background:rgba(255,255,255,.9);backdrop-filter:blur(10px);
-  border:1px solid #f3dfe6;box-shadow:var(--shadow);transition:opacity .6s,transform .6s}
+  border:1px solid #f3dfe6;box-shadow:var(--shadow);
+  opacity:0;transform:translateY(26px) scale(.95);
+  transition:opacity .8s ease,transform .8s cubic-bezier(.22,1,.36,1)}
+.ask-card.in{opacity:1;transform:none}
 .ask-card.gone{opacity:0;transform:scale(.94);pointer-events:none;position:absolute;left:-9999px}
 .ask-heart{font-size:2.6rem;line-height:1;margin-bottom:14px;
   animation:beat 1.9s ease-in-out infinite}
@@ -306,7 +422,9 @@ h2{font-size:clamp(1.5rem,4.6vw,2.3rem)}
 .irl-sub{margin-top:12px;font-size:clamp(1.1rem,3.8vw,1.4rem);color:var(--rose-deep);
   font-style:italic}
 
-.hint{margin-top:40px;color:var(--ink-soft);font-size:.92rem;letter-spacing:.14em;text-transform:uppercase}
+.hint{margin-top:40px;color:var(--ink-soft);font-size:.92rem;letter-spacing:.14em;
+  text-transform:uppercase;transition:opacity .7s ease;
+  text-shadow:0 1px 12px rgba(255,255,255,.98)}
 .hint span{display:inline-block;animation:bob 2s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 .divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,#e5bccb,transparent);margin:34px auto}
@@ -317,8 +435,10 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   .deck{width:min(56vw,210px)}
   .player iframe{height:152px}     /* компактный плеер, иначе секция не влезает */
   .sp-card{padding:12px}
-  .chat{max-height:min(58svh,440px);padding:14px 12px}
-  .bubble{font-size:.95rem}
+  .stage-frame{padding:7px;border-radius:22px}
+  .say{max-width:43%;padding:6px 9px;border-radius:13px;font-size:.72rem;line-height:1.34}
+  .stage-frame{padding:6px}
+  .cap{min-height:4em}
   .board-wrap{width:min(100%,300px)}
   .puzzle-card{padding:16px}
   .letter{padding:26px 22px;font-size:1rem}
@@ -332,7 +452,11 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
 
 <canvas id="fx" aria-hidden="true"></canvas>
 <div id="blooms"></div>
-<div id="garden"></div>
+<div id="garden">
+  <div class="ground"></div>
+  <svg id="grass" preserveAspectRatio="none" aria-hidden="true"></svg>
+</div>
+<div id="bugs" aria-hidden="true"></div>
 
 <!-- ===== 1. ОТКРОЙ МЕНЯ ===== -->
 <section class="scene" id="gate">
@@ -368,7 +492,8 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
 <section class="scene" id="musicScene">
   <div class="wrap reveal">
     <h2>Наша песня</h2>
-    <p class="sub" style="margin-bottom:34px">Включи — дальше читать под неё.</p>
+    <p class="sub" style="margin-bottom:34px">Мелодия уже играет — она не кончится.<br>
+      А если хочешь нашу песню, включи её тут.</p>
 
     <div class="turntable">
       <!-- проигрыватель -->
@@ -408,19 +533,279 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   </div>
 </section>
 
-<!-- ===== 4. ДИАЛОГ ===== -->
-<section class="scene" id="chatScene">
+<!-- ===== 4. ИСТОРИЯ В КАДРАХ ===== -->
+<section class="scene" id="storyScene">
   <div class="wrap reveal">
-    <h2>Один наш разговор</h2>
-    <p class="sub" style="margin-bottom:30px">Реконструкция по мотивам реальных событий.</p>
-    <div class="chat" id="chat"></div>
+    <h2>Давай расскажу, как это было</h2>
+    <p class="sub" style="margin-bottom:26px">Наша история — в нескольких кадрах.</p>
+
+    <div class="stage-frame">
+      <div class="stage" id="stage" data-act="1">
+        <svg class="scene-svg" viewBox="0 0 900 470" aria-label="Наша история">
+          <defs>
+            <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff6f8"/><stop offset="1" stop-color="#fde6ec"/>
+            </linearGradient>
+            <linearGradient id="skyEve" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0"   stop-color="#3f3160"/>
+              <stop offset=".52" stop-color="#8d5877"/>
+              <stop offset="1"   stop-color="#efa08e"/>
+            </linearGradient>
+            <radialGradient id="sunG" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#fff3c9"/><stop offset="1" stop-color="#ffd9a1"/>
+            </radialGradient>
+            <linearGradient id="dressG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f7a4bd"/><stop offset="1" stop-color="#e2789e"/>
+            </linearGradient>
+            <linearGradient id="shirtG" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#8fa9e4"/><stop offset="1" stop-color="#6d8bcd"/>
+            </linearGradient>
+            <linearGradient id="nightGround" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#3a2c58" stop-opacity="0"/>
+              <stop offset="1" stop-color="#32284c" stop-opacity=".58"/>
+            </linearGradient>
+          </defs>
+
+          <!-- ---- небо ---- -->
+          <rect width="900" height="470" fill="url(#skyDay)"/>
+          <g id="skyNight" class="prop" data-acts="4 5 6 7">
+            <rect width="900" height="470" fill="url(#skyEve)"/>
+            <g fill="#fff">
+              <circle class="twinkle" style="--td:0s"   cx="120" cy="70"  r="2.2"/>
+              <circle class="twinkle" style="--td:.5s"  cx="230" cy="42"  r="1.6"/>
+              <circle class="twinkle" style="--td:1.1s" cx="330" cy="96"  r="2"/>
+              <circle class="twinkle" style="--td:.8s"  cx="470" cy="52"  r="1.7"/>
+              <circle class="twinkle" style="--td:1.6s" cx="600" cy="88"  r="2.3"/>
+              <circle class="twinkle" style="--td:.3s"  cx="700" cy="40"  r="1.5"/>
+              <circle class="twinkle" style="--td:1.9s" cx="820" cy="112" r="2"/>
+              <circle class="twinkle" style="--td:1.3s" cx="60"  cy="150" r="1.5"/>
+            </g>
+            <circle cx="760" cy="82" r="34" fill="#fff6e6" opacity=".95"/>
+            <circle cx="748" cy="74" r="30" fill="#8d5877" opacity=".9"/>
+          </g>
+
+          <!-- солнце и облака — дневные кадры -->
+          <g id="dayLight" class="prop on" data-acts="1 2 3">
+            <circle cx="770" cy="86" r="40" fill="url(#sunG)"/>
+            <circle cx="770" cy="86" r="62" fill="#ffe7c4" opacity=".28"/>
+            <g fill="#fff" opacity=".85">
+              <g class="cloud" style="--cd:52s">
+                <ellipse cx="120" cy="90" rx="42" ry="19"/><ellipse cx="152" cy="82" rx="30" ry="22"/>
+                <ellipse cx="88"  cy="84" rx="26" ry="16"/>
+              </g>
+              <g class="cloud" style="--cd:74s;--cdl:-30s">
+                <ellipse cx="420" cy="52" rx="34" ry="15"/><ellipse cx="446" cy="46" rx="24" ry="17"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- ---- холмы и земля ---- -->
+          <path d="M0,392 q150,-64 300,-18 q130,42 260,-26 q150,-72 340,16 L900,470 L0,470 Z" fill="#efd6e0" opacity=".85"/>
+          <rect y="400" width="900" height="70" fill="#dbe7cd"/>
+          <path d="M0,400 q120,-12 230,2 q140,18 250,-4 q160,-20 420,6 L900,412 L0,412 Z" fill="#cfe0bf"/>
+          <g stroke="#a9c795" stroke-width="3" stroke-linecap="round" opacity=".8">
+            <path d="M40,432 q4,-16 10,-24"/><path d="M52,432 q-2,-18 -2,-26"/>
+            <path d="M215,442 q5,-15 11,-22"/><path d="M226,442 q-1,-16 -1,-24"/>
+            <path d="M690,436 q5,-16 12,-23"/><path d="M702,436 q-1,-17 -1,-25"/>
+            <path d="M845,448 q5,-15 11,-22"/><path d="M856,448 q-1,-16 -1,-23"/>
+          </g>
+          <g id="wildFlowers">
+            <g transform="translate(120,438)"><path d="M0,0 v-22" stroke="#8fb47c" stroke-width="3"/><circle cy="-24" r="7" fill="#f6a8c0"/><circle cy="-24" r="2.6" fill="#fff2c2"/></g>
+            <g transform="translate(300,450)"><path d="M0,0 v-26" stroke="#8fb47c" stroke-width="3"/><circle cy="-28" r="8" fill="#e6a8e8"/><circle cy="-28" r="3" fill="#fff2c2"/></g>
+            <g transform="translate(600,444)"><path d="M0,0 v-24" stroke="#8fb47c" stroke-width="3"/><circle cy="-26" r="7.5" fill="#f9c58c"/><circle cy="-26" r="2.8" fill="#fff2c2"/></g>
+            <g transform="translate(790,452)"><path d="M0,0 v-20" stroke="#8fb47c" stroke-width="3"/><circle cy="-22" r="7" fill="#f6a8c0"/><circle cy="-22" r="2.6" fill="#fff2c2"/></g>
+          </g>
+
+          <!-- вечерние кадры: земля уходит в сумерки, а герои остаются светлыми -->
+          <g class="prop" data-acts="4 5 6 7">
+            <rect y="318" width="900" height="152" fill="url(#nightGround)"/>
+          </g>
+
+          <!-- ---- столик со свидания ---- -->
+          <g id="table" class="prop" data-acts="4">
+            <g transform="translate(484,400) scale(1.42)">
+              <rect x="-4" y="-52" width="8" height="52" fill="#b98a6d"/>
+              <ellipse cx="0" cy="-56" rx="52" ry="12" fill="#d3a583"/>
+              <ellipse cx="0" cy="-59" rx="52" ry="12" fill="#e6bd9c"/>
+              <ellipse cx="0" cy="2" rx="30" ry="7" fill="rgba(80,50,70,.16)"/>
+              <g transform="translate(-22,-62)">
+                <path d="M-8,0 h16 l-2,13 h-12 z" fill="#fff"/><path d="M8,3 q7,3 0,7" stroke="#fff" stroke-width="2.4" fill="none"/>
+                <ellipse cy="0" rx="8" ry="2.6" fill="#c2735c"/>
+              </g>
+              <g transform="translate(22,-62)">
+                <path d="M-8,0 h16 l-2,13 h-12 z" fill="#fff"/><path d="M8,3 q7,3 0,7" stroke="#fff" stroke-width="2.4" fill="none"/>
+                <ellipse cy="0" rx="8" ry="2.6" fill="#c2735c"/>
+              </g>
+              <g transform="translate(0,-64)">
+                <path d="M0,0 v-16" stroke="#8fb47c" stroke-width="2.4"/>
+                <circle cy="-18" r="6" fill="#f4849f"/><circle cy="-18" r="2.2" fill="#fff0bf"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- ---- мальчик ---- -->
+          <g id="boy" class="fig">
+            <ellipse cx="0" cy="2" rx="34" ry="7.5" fill="rgba(90,60,80,.15)"/>
+            <g class="sway">
+              <path class="limb leg legA" d="M-11,-58 L-14,-3" stroke="#4d5f8c" stroke-width="13"/>
+              <path class="limb leg legB" d="M11,-58 L14,-3" stroke="#42537f" stroke-width="13"/>
+              <path d="M-27,-62 C-31,-112 -22,-134 0,-134 C22,-134 31,-112 27,-62 C10,-54 -10,-54 -27,-62 Z" fill="url(#shirtG)"/>
+              <path d="M-27,-62 C-10,-54 10,-54 27,-62 L25,-75 C8,-68 -8,-68 -25,-75 Z" fill="#5f7cc0" opacity=".55"/>
+              <g><path class="limb" d="M-24,-122 C-40,-104 -45,-88 -39,-72" stroke="#8299dd" stroke-width="11"/><circle cx="-39" cy="-70" r="7" fill="#f3cdaf"/></g>
+              <g><path class="limb" d="M24,-122 C40,-104 45,-88 39,-72" stroke="#8299dd" stroke-width="11"/><circle cx="39" cy="-70" r="7" fill="#f3cdaf"/></g>
+              <rect x="-6" y="-143" width="12" height="14" rx="5" fill="#eec2a2"/>
+              <circle cx="0" cy="-163" r="27" fill="#f6d2b4"/>
+              <path d="M-27,-167 C-25,-193 -12,-197 0,-197 C15,-197 27,-190 27,-165 C22,-177 14,-181 2,-179 C-9,-177 -20,-177 -27,-167 Z" fill="#3c2b31"/>
+              <circle cx="-9.5" cy="-165" r="3.2" fill="#3c2b31"/>
+              <circle cx="9.5" cy="-165" r="3.2" fill="#3c2b31"/>
+              <circle cx="-17.5" cy="-155" r="5" fill="#f2a0ac" opacity=".5"/>
+              <circle cx="17.5" cy="-155" r="5" fill="#f2a0ac" opacity=".5"/>
+              <path d="M-6,-152 q6,6.5 12,0" fill="none" stroke="#a9636a" stroke-width="2.6" stroke-linecap="round"/>
+
+              <!-- телефон в руке -->
+              <g id="phone" class="prop on" data-acts="1 2" transform="translate(41,-84) rotate(-10)">
+                <rect x="-10" y="-16" width="20" height="32" rx="4.5" fill="#38343f"/>
+                <rect x="-8" y="-14" width="16" height="28" rx="3" fill="#d8ecfb"/>
+                <circle cx="0" cy="-4" r="4" fill="#ef7d9e"/>
+                <rect x="-5" y="4" width="10" height="2.4" rx="1.2" fill="#b9cfe0"/>
+              </g>
+              <!-- капелька пота: тормозим -->
+              <g id="sweat" class="prop">
+                <path d="M30,-186 q6,9 0,13 q-6,-4 0,-13 z" fill="#8fd0ef"/>
+              </g>
+              <!-- букет -->
+              <g id="bouquet" class="prop" data-acts="3" transform="translate(42,-88)">
+                <path d="M0,14 v-16" stroke="#8fb47c" stroke-width="3"/>
+                <g transform="translate(0,-6)">
+                  <circle cx="-8" cy="-2" r="7" fill="#f4849f"/><circle cx="8" cy="-3" r="7" fill="#f6a8c0"/>
+                  <circle cx="0" cy="-11" r="7.5" fill="#efc0dd"/><circle cx="0" cy="-4" r="6.5" fill="#fff0bf"/>
+                </g>
+              </g>
+            </g>
+          </g>
+
+          <!-- ---- девочка ---- -->
+          <g id="girl" class="fig">
+            <ellipse cx="0" cy="2" rx="32" ry="7.5" fill="rgba(90,60,80,.15)"/>
+            <g class="sway">
+              <path class="limb leg legA" d="M-9,-50 L-11,-3" stroke="#f0c6a8" stroke-width="11"/>
+              <path class="limb leg legB" d="M9,-50 L11,-3" stroke="#e6b99c" stroke-width="11"/>
+              <path d="M-31,-158 C-42,-118 -38,-92 -31,-74 L31,-74 C38,-92 42,-118 31,-158 Z" fill="#5c3d35"/>
+              <path d="M-38,-50 C-30,-96 -22,-126 0,-126 C22,-126 30,-96 38,-50 C20,-42 -20,-42 -38,-50 Z" fill="url(#dressG)"/>
+              <path d="M-38,-50 C-20,-42 20,-42 38,-50 L35,-61 C18,-53 -18,-53 -35,-61 Z" fill="#d96e93" opacity=".5"/>
+              <g><path class="limb" d="M-24,-116 C-37,-100 -41,-86 -36,-70" stroke="#f0c6a8" stroke-width="9.5"/><circle cx="-36" cy="-68" r="6.4" fill="#f3cdaf"/></g>
+              <g><path class="limb" d="M24,-116 C37,-100 41,-86 36,-70" stroke="#f0c6a8" stroke-width="9.5"/><circle cx="36" cy="-68" r="6.4" fill="#f3cdaf"/></g>
+              <rect x="-5.5" y="-137" width="11" height="14" rx="5" fill="#eec1a2"/>
+              <circle cx="0" cy="-157" r="25.5" fill="#f7d5ba"/>
+              <path d="M-26,-159 C-26,-186 -12,-192 0,-192 C13,-192 26,-185 26,-157 C21,-171 10,-177 -2,-175 C-13,-173 -21,-170 -26,-159 Z" fill="#5c3d35"/>
+              <circle cx="-8.8" cy="-159" r="3" fill="#432c2a"/>
+              <circle cx="8.8" cy="-159" r="3" fill="#432c2a"/>
+              <circle cx="-16.5" cy="-149" r="4.8" fill="#f2a0ac" opacity=".55"/>
+              <circle cx="16.5" cy="-149" r="4.8" fill="#f2a0ac" opacity=".55"/>
+              <path d="M-5.5,-147 q5.5,6 11,0" fill="none" stroke="#a9636a" stroke-width="2.4" stroke-linecap="round"/>
+              <g transform="translate(-21,-176)">
+                <circle cx="-5" cy="0" r="4.2" fill="#fff"/><circle cx="5" cy="0" r="4.2" fill="#fff"/>
+                <circle cx="0" cy="-5" r="4.2" fill="#fff"/><circle cx="0" cy="5" r="4.2" fill="#fff"/>
+                <circle r="3" fill="#ffd977"/>
+              </g>
+            </g>
+          </g>
+
+          <!-- уведомление «подписалась» -->
+          <g transform="translate(480,198) scale(1.28)">
+            <g id="notif" class="prop">
+              <rect x="-96" y="-30" width="192" height="60" rx="16" fill="#fff" stroke="#f0d7e0"/>
+              <circle cx="-66" cy="0" r="18" fill="#f7b6c9"/>
+              <text x="-66" y="6" font-size="18" text-anchor="middle">💗</text>
+              <text x="-40" y="-4" font-size="15" fill="#5b3a44" font-family="Georgia,serif">она подписалась</text>
+              <text x="-40" y="16" font-size="14" fill="#a1808a" font-family="Georgia,serif">на тебя. только что.</text>
+            </g>
+          </g>
+
+          <!-- облачко мыслей -->
+          <g transform="translate(452,214)">
+            <g id="think" class="prop thought">
+              <ellipse rx="50" ry="29" fill="#fff" stroke="#eddbe6"/>
+              <circle cx="-46" cy="-25" r="8" fill="#fff" stroke="#eddbe6"/>
+              <circle cx="-61" cy="-39" r="4.6" fill="#fff" stroke="#eddbe6"/>
+              <g fill="#c79ab0"><circle cx="-17" r="5.2"/><circle cx="0" r="5.2"/><circle cx="17" r="5.2"/></g>
+            </g>
+          </g>
+
+          <!-- счётчик дней -->
+          <g id="days" class="prop">
+            <text id="daysText" x="450" y="452" font-size="25" text-anchor="middle"
+                  fill="#a1808a" font-family="Georgia,serif" font-style="italic">день 1</text>
+          </g>
+
+          <!-- держатся за руки -->
+          <g id="handHold" class="prop" data-acts="5 6 7">
+            <g transform="translate(479,314) scale(1.18)">
+              <circle r="9" fill="#f3cdaf"/>
+              <circle cx="-9" cy="2" r="6.5" fill="#f0c6a8"/>
+              <circle cx="9" cy="2" r="6.5" fill="#f3cdaf"/>
+            </g>
+          </g>
+
+          <!-- сердечки -->
+          <g id="hearts" class="prop" data-acts="5 6 7">
+            <g transform="translate(479,286)" fill="#ef7fa2">
+              <path class="mini-heart" style="--rd:4.2s;--rdl:0s"   transform="translate(-70,0) scale(.9)"  d="M0,7 C-9,0 -12,-4 -12,-8 C-12,-13 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 12,-13 12,-8 C12,-4 9,0 0,7 Z"/>
+              <path class="mini-heart" style="--rd:5.1s;--rdl:.9s"  transform="translate(0,-14) scale(1.25)" d="M0,7 C-9,0 -12,-4 -12,-8 C-12,-13 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 12,-13 12,-8 C12,-4 9,0 0,7 Z" fill="#f5a0bb"/>
+              <path class="mini-heart" style="--rd:4.7s;--rdl:1.8s" transform="translate(66,-4) scale(1)"   d="M0,7 C-9,0 -12,-4 -12,-8 C-12,-13 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 12,-13 12,-8 C12,-4 9,0 0,7 Z"/>
+              <path class="mini-heart" style="--rd:5.6s;--rdl:2.6s" transform="translate(-32,-24) scale(.75)" d="M0,7 C-9,0 -12,-4 -12,-8 C-12,-13 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 12,-13 12,-8 C12,-4 9,0 0,7 Z" fill="#fbc0d2"/>
+              <path class="mini-heart" style="--rd:4.9s;--rdl:3.3s" transform="translate(36,-30) scale(.85)" d="M0,7 C-9,0 -12,-4 -12,-8 C-12,-13 -8,-15 -5,-15 C-2,-15 0,-13 0,-11 C0,-13 2,-15 5,-15 C8,-15 12,-13 12,-8 C12,-4 9,0 0,7 Z" fill="#fbc0d2"/>
+            </g>
+          </g>
+        </svg>
+
+        <div class="say boy"  id="sayBoy"></div>
+        <div class="say girl" id="sayGirl"></div>
+      </div>
+    </div>
+
+    <div class="cap" id="cap"></div>
+    <div class="beats" id="beats"></div>
+    <div class="hint" id="storyHint" style="opacity:0;margin-top:20px"><span>листай ниже ↓</span></div>
   </div>
 </section>
 
-<!-- ===== 5. ВОПРОС ===== -->
+<!-- ===== 5. СЕРДЦЕ И ВОПРОС ===== -->
 <section class="scene" id="askScene">
   <div class="wrap reveal">
-    <div class="ask-card" id="askCard">
+    <h2 class="script" id="heartTitle">Я хотел кое-что сказать</h2>
+    <p class="sub" id="heartSub" style="margin-bottom:22px;transition:opacity .5s ease">Оно спрятано вот здесь. Разбей — и увидишь.</p>
+
+    <div class="heart-wrap" id="heartWrap" role="button" tabindex="0" aria-label="Разбить сердце">
+      <svg viewBox="0 0 240 220" aria-hidden="true">
+        <defs>
+          <path id="hpath" d="M120,202 C38,142 18,100 18,71 C18,39 43,19 71,19 C94,19 112,32 120,50 C128,32 146,19 169,19 C197,19 222,39 222,71 C222,100 202,142 120,202 Z"/>
+          <clipPath id="hclip"><use href="#hpath"/></clipPath>
+          <radialGradient id="hgrad" cx="38%" cy="30%" r="76%">
+            <stop offset="0"   stop-color="#ffb9cd"/>
+            <stop offset=".55" stop-color="#ec7ea1"/>
+            <stop offset="1"   stop-color="#c8517a"/>
+          </radialGradient>
+          <!-- тот же градиент, но привязанный к холсту: осколки разлетаются,
+               а окраска у них остаётся такой, будто их только что оторвали -->
+          <radialGradient id="hgradU" gradientUnits="userSpaceOnUse" cx="95" cy="68" r="180">
+            <stop offset="0"   stop-color="#ffb9cd"/>
+            <stop offset=".55" stop-color="#ec7ea1"/>
+            <stop offset="1"   stop-color="#c8517a"/>
+          </radialGradient>
+        </defs>
+        <g id="heartWhole">
+          <use href="#hpath" fill="url(#hgrad)"/>
+          <path d="M62,44 C48,52 42,66 44,80 C56,66 62,54 62,44 Z" fill="#fff" opacity=".5"/>
+          <g id="cracks"></g>
+        </g>
+        <g id="shards"></g>
+      </svg>
+      <div class="heart-note" id="heartNote">нажми ✨</div>
+    </div>
+    <div class="tap-hint" id="tapHint" style="transition:opacity .5s ease"><span>кликни по сердцу</span></div>
+
+    <div class="ask-card hidden" id="askCard">
       <div class="ask-heart">🌷</div>
       <h2 class="ask-q" id="askQ">Будешь моей девушкой?</h2>
       <div class="ask-btns" id="askBtns">
@@ -458,37 +843,60 @@ const CONFIG = {
   // Если файла нет, подставится нарисованная картинка-заглушка.
   photo: 'photos/1.jpg',
 
-  // Кто с кем разговаривает и что именно. who: 'me' — ты, 'her' — она.
-  chat: {
-    me:  { name: 'я',  emoji: '🙂' },
-    her: { name: 'она', emoji: '😽' },
-    lines: [
-      ['me',  'ты сегодня вечером занята?'],
-      ['her', 'а что'],
-      ['me',  'ничего. просто спрашиваю'],
-      ['her', 'ты никогда просто не спрашиваешь'],
-      ['me',  'справедливо'],
-      ['her', 'ну говори уже'],
-      ['me',  'помнишь, как я тебе написал в первый раз'],
-      ['her', 'помню. ты печатал минут двадцать'],
-      ['me',  'семнадцать. я засекал'],
-      ['her', '😂 боже'],
-      ['me',  'вот сейчас примерно так же'],
-      ['her', 'то есть ты опять что-то репетируешь'],
-      ['me',  'ага'],
-      ['her', 'и что на этот раз'],
-      ['me',  'один вопрос'],
-      ['me',  'я вообще-то весь этот сайт собрал, чтобы его задать'],
-      ['her', 'подожди'],
-      ['her', 'ты серьёзно сейчас?'],
-      ['me',  'очень'],
-      ['me',  'листай ниже 🌷']
-    ]
-  },
+  // ИСТОРИЯ. Каждый кадр: act — номер сцены, boy/girl — реплики,
+  // cap — подпись рассказчика, days — надпись счётчика дней, wait — сколько держим кадр.
+  story: [
+    { act:1, cap:'Сначала был просто я. И вечер, и лента, которую я листал в сотый раз.',
+      boy:'ну и скукота…', wait:3200 },
+
+    { act:2, cap:'И вдруг — уведомление. Ты. Ты подписалась на меня первая.',
+      boy:'…', show:['notif'], wait:3400 },
+
+    { act:2, cap:'И тут я, как настоящий герой, завис. Целиком. Намертво.',
+      boy:'так, спокойно. что ей написать?', show:['notif','think','sweat'],
+      freeze:true, wait:3400 },
+
+    { act:2, cap:'День первый. День четвёртый. День девятый. Я всё ещё «сочинял ответ».',
+      boy:'напишу завтра. точно завтра.', show:['think','sweat','days'],
+      freeze:true, days:true, wait:4000 },
+
+    { act:3, cap:'А потом я всё-таки выдохнул и пошёл. С цветами и трясущимися руками.',
+      boy:'слушай… может, сходим куда-нибудь?', walk:true, wait:3600 },
+
+    { act:3, cap:'Оказалось, ты ждала. Всё это время ждала, пока я решусь.',
+      girl:'я думала, ты никогда не спросишь 🙂', wait:3200 },
+
+    { act:4, cap:'Первое свидание. Я готовился три часа и всё равно всё перепутал.',
+      boy:'я репетировал эту фразу весь день', girl:'а я — всю неделю', wait:3600 },
+
+    { act:5, cap:'А дальше всё пошло само: кофе, ночные разговоры, твоё «доброе утро».',
+      wait:3400 },
+
+    { act:5, cap:'И в какой-то момент обычные дни стали нашими днями.',
+      girl:'с тобой хорошо', boy:'с тобой — лучше всех', wait:3400 },
+
+    { act:6, cap:'',
+      boy:'слушай… я хочу тебе кое-что сказать', wait:2600 },
+
+    { act:6, cap:'',
+      boy:'слушай… я хочу тебе кое-что сказать', girl:'что?', wait:2400 },
+
+    { act:7, cap:'',
+      boy:'листай ниже ↓', girl:'что?', last:true, wait:0 }
+  ],
 
   // Что говорим, когда пазл собран
   puzzleDone: 'Я знал, что ты справишься 💗',
   puzzleNext: 'а теперь послушай…',
+
+  // Сердце, которое надо разбить
+  heart: {
+    title:  'Я хотел кое-что сказать',
+    sub:    'Оно спрятано вот здесь. Разбей — и увидишь.',
+    note:   'нажми ✨',
+    hint:   'кликни по сердцу',
+    broken: 'а внутри было вот что…'
+  },
 
   // Финал: сам вопрос и что будет после «да»
   proposal: {
@@ -913,8 +1321,8 @@ function bloomShower(n=16, delayMax=1.6){
 /* --- растущий из земли цветок на стебле --- */
 let planted = 0;
 function growFlower(xPercent, delay=0){
-  const h    = rnd(110, 380) * (HEAVY < 1 ? .8 : 1);   // высота стебля
-  const head = rnd(48, 116);                            // размер бутона
+  const h    = rnd(90, 292) * (HEAVY < 1 ? .8 : 1);    // высота стебля
+  const head = rnd(42, 96);                             // размер бутона
   const bend = rnd(-34, 34);                            // изгиб стебля
   const green = `hsl(${rnd(96,148).toFixed(0)} ${rnd(30,48).toFixed(0)}% ${rnd(38,56).toFixed(0)}%)`;
 
@@ -958,11 +1366,122 @@ function growFlower(xPercent, delay=0){
 // целая клумба: цветы прорастают слева направо, вперемешку
 function growGarden(n=26, spread=3.4){
   const total = CALM ? Math.min(4, n) : n;
-  const cap = HEAVY < 1 ? 34 : 60;
+  const cap = HEAVY < 1 ? 30 : 48;
   for (let i=0;i<total && planted < cap;i++){
     growFlower(rnd(-3, 103), total > 1 ? Math.pow(i/total, .8) * spread + rnd(0,.5) : rnd(0,.25));
   }
 }
+
+/* ============================================================
+   ПОСЛЕ ЗАНАВЕСА: ливень выключаем — дальше живая клумба,
+   трава и бабочки. Падающие цветы остаются только как салют
+   в редкие праздничные моменты.
+   ============================================================ */
+function stopRain(){
+  ambientWant = 0;
+  for (const f of flakes) f.loop = false;   // те, что уже в воздухе, спокойно долетают
+}
+
+/* --- трава вдоль нижнего края --- */
+function buildGrass(){
+  const g = document.getElementById('grass');
+  const w = Math.round(innerWidth * 1.04);
+  g.setAttribute('viewBox', `0 0 ${w} 190`);
+  const n = CALM ? 34 : Math.round(w/8);
+  let s = '';
+  for (let i=0;i<n;i++){
+    const x = (i + rnd(-.45,.45)) * w/n;
+    const h = rnd(46,156), bend = rnd(-28,28);
+    const hue = rnd(86,136).toFixed(0), sat = rnd(24,46).toFixed(0), lit = rnd(32,58).toFixed(0);
+    s += `<path class="blade"
+            style="--sd:${rnd(3.4,7.4).toFixed(1)}s;--sdl:${(-rnd(0,7)).toFixed(1)}s;--sa:${rnd(2,7).toFixed(1)}deg"
+            d="M${x.toFixed(0)},191 Q${(x+bend*.45).toFixed(0)},${(190-h*.62).toFixed(0)} ${(x+bend).toFixed(0)},${(190-h).toFixed(0)}"
+            stroke="hsl(${hue} ${sat}% ${lit}% / ${rnd(.45,.9).toFixed(2)})"
+            stroke-width="${rnd(2,5.2).toFixed(1)}" fill="none" stroke-linecap="round"/>`;
+  }
+  g.innerHTML = s;
+}
+
+/* --- бабочки и пчёлы над клумбой --- */
+const WING_PAIRS = [
+  ['#f6a8c0','#fcd4e0'], ['#e3a6ea','#f4d6f7'], ['#f9c58c','#fde5c8'],
+  ['#a9c9f2','#dbe9fc'], ['#f4849f','#fbc3d2'], ['#f7d78a','#fdf0c9']
+];
+function butterflySVG(){
+  const [a,b] = pick(WING_PAIRS);
+  const dot = 'rgba(255,255,255,.75)';
+  const wing = side => `
+    <g class="wing ${side}">
+      <path d="M32,21 C15,1 1,9 5,22 C8,31 22,29 32,25 Z" fill="${a}"/>
+      <path d="M32,26 C21,30 11,38 17,46 C23,52 31,39 32,31 Z" fill="${b}"/>
+      <circle cx="14" cy="17" r="3.1" fill="${dot}"/>
+      <circle cx="21" cy="41" r="2.1" fill="${dot}"/>
+    </g>`;
+  return `<svg viewBox="0 0 64 52" xmlns="http://www.w3.org/2000/svg">
+    ${wing('l')}
+    <g transform="translate(64,0) scale(-1,1)">${wing('r')}</g>
+    <ellipse cx="32" cy="30" rx="3.2" ry="12.5" fill="#5c3a46"/>
+    <circle cx="32" cy="16" r="4.1" fill="#5c3a46"/>
+    <path d="M31,13 C27,6 23,4 20,4 M33,13 C37,6 41,4 44,4"
+          stroke="#5c3a46" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <circle cx="20" cy="4" r="1.9" fill="#5c3a46"/><circle cx="44" cy="4" r="1.9" fill="#5c3a46"/>
+  </svg>`;
+}
+function beeSVG(){
+  const wing = side => `
+    <g class="wing ${side}">
+      <ellipse cx="19" cy="18" rx="14" ry="8" transform="rotate(-22 19 18)"
+               fill="rgba(233,244,255,.72)" stroke="rgba(160,180,205,.6)" stroke-width=".9"/>
+    </g>`;
+  return `<svg viewBox="0 0 64 52" xmlns="http://www.w3.org/2000/svg">
+    ${wing('l')}
+    <g transform="translate(64,0) scale(-1,1)">${wing('r')}</g>
+    <ellipse cx="32" cy="32" rx="15" ry="11" fill="#f5c542"/>
+    <path d="M25,23 q3,18 3,18 M32,21 q0,22 0,22 M39,23 q-3,18 -3,18"
+          stroke="#4a3520" stroke-width="4" stroke-linecap="round" fill="none" opacity=".92"/>
+    <circle cx="17" cy="30" r="7.5" fill="#4a3520"/>
+    <circle cx="14.5" cy="28" r="1.6" fill="#fff"/>
+    <path d="M15,23 C12,17 9,15 7,15 M20,22 C19,16 17,13 15,12"
+          stroke="#4a3520" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+    <path d="M47,32 l7,-3 l-7,-2 z" fill="#4a3520"/>
+  </svg>`;
+}
+function spawnBugs(n){
+  const host = document.getElementById('bugs');
+  const total = n ?? (CALM ? 2 : HEAVY < 1 ? 3 : 6);
+  for (let i=0;i<total;i++){
+    const isBee = Math.random() < .26;
+    const el = document.createElement('div');
+    el.className = 'bug' + (Math.random() < .5 ? ' rev' : '');
+    el.style.cssText =
+      `--w:${(isBee ? rnd(30,44) : rnd(40,68)).toFixed(0)}px;` +
+      `--dx:${rnd(24,56).toFixed(0)}s;--dl:${(-rnd(0,34)).toFixed(0)}s;` +
+      `--dy:${rnd(3.2,7.5).toFixed(1)}s;--dl2:${(-rnd(0,7)).toFixed(1)}s;` +
+      `--y0:${rnd(10,52).toFixed(0)}vh;--y1:${rnd(36,84).toFixed(0)}vh;` +
+      `--fl:${(isBee ? rnd(.05,.09) : rnd(.2,.38)).toFixed(2)}s;`;
+    el.innerHTML = `<div class="bugy"><div class="tilt"><div class="flip">${
+      isBee ? beeSVG() : butterflySVG()}</div></div></div>`;
+    host.appendChild(el);
+  }
+}
+
+let gardenOn = false;
+function gardenScene(){
+  if (gardenOn) return;
+  gardenOn = true;
+  stopRain();                                  // посыпка выключается насовсем
+  buildGrass();
+  document.body.classList.add('garden-on');
+  growGarden(HEAVY < 1 ? 14 : 22, 3);
+  spawnBugs();
+}
+// трава нарезана под ширину окна — при развороте телефона пересобираем
+let grassTimer = null;
+addEventListener('resize', ()=>{
+  if (!gardenOn) return;
+  clearTimeout(grassTimer);
+  grassTimer = setTimeout(buildGrass, 300);
+});
 
 // редкие цветы летят ещё до нажатия — чтобы экран не был пустым
 setTimeout(()=>ambientRain(26), 400);
@@ -985,8 +1504,7 @@ const io = new IntersectionObserver(entries => {
     reveal(el);
     if (!seen.has(el.id)){
       seen.add(el.id);
-      if (el.id === 'musicScene') deck.classList.add('playing');
-      if (el.id === 'chatScene')  playChat();
+      if (el.id === 'storyScene') playStory();
     }
   }
 }, {threshold:.25});
@@ -999,6 +1517,7 @@ document.getElementById('openBtn').addEventListener('click', e => {
   document.body.classList.remove('locked');
   opened_ = true;
 
+  MUSIC.start();          // с этого нажатия музыка играет и больше не смолкает
   curtainFall();          // полотно пошло сверху
 
   // Подмена — ровно посередине окна, когда полотно уже накрыло весь экран
@@ -1011,8 +1530,8 @@ document.getElementById('openBtn').addEventListener('click', e => {
     document.querySelectorAll('.scene').forEach(sec => io.observe(sec));
   }, 2200);
 
-  // спокойный фон подхватывает, когда полотно уходит вниз
-  setTimeout(()=>{ ambientRain(300); bloomShower(20, 2); }, 3200);
+  // полотно уходит вниз — и на его месте вырастает сад: трава, цветы, бабочки
+  setTimeout(gardenScene, 3400);
 });
 
 // цветок распускается там, где нажали
@@ -1026,7 +1545,7 @@ addEventListener('pointerdown', e => {
 /* Клумба растёт по мере прокрутки: чем ниже спустились, тем гуще внизу.
    Считаем, сколько цветов «положено» на текущей глубине, и досаживаем
    недостающие — так они появляются ровно под движение пальца. */
-const GARDEN_MAX = HEAVY < 1 ? 26 : 46;
+const GARDEN_MAX = HEAVY < 1 ? 22 : 38;
 let ticking = false;
 function onScroll(){
   if (ticking) return;
@@ -1178,58 +1697,401 @@ document.getElementById('shuffleBtn').addEventListener('click', ()=>{
 
 /* ============================================================
    МУЗЫКА
+
+   Мелодия не файл, а живая шкатулка: аккорды идут по кругу, а линия
+   сверху каждый раз складывается заново. Поэтому она не кончается —
+   один раз включилась и играет, пока открыта страница. Останавливать
+   её нечем и незачем.
    ============================================================ */
+const MUSIC = (() => {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  let actx = null, master = null, voices = null, timer = null;
+  let started = false, nextTime = 0, barNo = 0, mi = 3;
+
+  const BPM = 62, BEAT = 60/BPM, BAR = BEAT*4;
+
+  // тёплый круг: C — G/B — Am — F. Ходит сам в себя, поэтому шва не слышно.
+  const CHORDS = [
+    { bass:130.81, notes:[261.63, 329.63, 392.00] },
+    { bass:123.47, notes:[246.94, 293.66, 392.00] },
+    { bass:110.00, notes:[261.63, 329.63, 440.00] },
+    { bass: 87.31, notes:[261.63, 349.23, 440.00] }
+  ];
+  // пентатоника: какую ноту ни возьми — мимо не будет
+  const SCALE = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+
+  function reverb(){
+    const len = Math.floor(actx.sampleRate * 2.8);
+    const buf = actx.createBuffer(2, len, actx.sampleRate);
+    for (let ch=0; ch<2; ch++){
+      const d = buf.getChannelData(ch);
+      for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.8);
+    }
+    const c = actx.createConvolver(); c.buffer = buf; return c;
+  }
+
+  // нота-колокольчик: мягкая атака, длинный хвост
+  function bell(f, t, gain, dur){
+    const o  = actx.createOscillator(), o2 = actx.createOscillator();
+    const g  = actx.createGain(),       g2 = actx.createGain();
+    o.type = 'sine';     o.frequency.value = f;
+    o2.type = 'triangle'; o2.frequency.value = f * 2.006;   // лёгкая расстройка даёт «звон»
+    g2.gain.value = .14;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + .014);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(voices);
+    o.start(t); o2.start(t);
+    o.stop(t + dur + .06); o2.stop(t + dur + .06);
+  }
+
+  // подушка: держит гармонию под мелодией
+  function pad(f, t, dur, gain){
+    const o = actx.createOscillator(), o2 = actx.createOscillator();
+    const lp = actx.createBiquadFilter(), g = actx.createGain();
+    o.type = 'triangle'; o.frequency.value = f;
+    o2.type = 'sine';    o2.frequency.value = f * 1.004;
+    lp.type = 'lowpass'; lp.frequency.value = 1250;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(gain, t + dur*.4);
+    g.gain.linearRampToValueAtTime(.0001, t + dur);
+    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(voices);
+    o.start(t); o2.start(t); o.stop(t + dur + .05); o2.stop(t + dur + .05);
+  }
+
+  function bass(f, t, dur){
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(.075, t + .09);
+    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g); g.connect(voices);
+    o.start(t); o.stop(t + dur + .05);
+  }
+
+  function playBar(i, t){
+    const ch = CHORDS[i % CHORDS.length];
+    bass(ch.bass, t, BAR*.95);
+    ch.notes.forEach((f,k)=> pad(f, t + k*.05, BAR*1.05, .034));
+
+    // мелодия бродит рядом с предыдущей нотой — получается линия, а не набор писков
+    const rhythm = pick([[0,1,2,3],[0,1.5,2.5,3.5],[0,.75,1.5,2.5,3.25],[0,1,1.75,2.75]]);
+    for (const b of rhythm){
+      if (Math.random() < .14) continue;                       // паузы, чтобы линия дышала
+      mi = Math.max(0, Math.min(SCALE.length-1, mi + Math.round(rnd(-1.7,1.7))));
+      bell(SCALE[mi], t + b*BEAT, rnd(.09,.15), rnd(1.9,3));
+      if (Math.random() < .16)                                  // редкий подголосок квинтой выше
+        bell(SCALE[Math.min(SCALE.length-1, mi+2)], t + b*BEAT + .1, .05, 1.7);
+    }
+    if (i % 8 === 7) bell(SCALE[Math.min(SCALE.length-1, mi+3)], t + BAR*.75, .07, 3.2);
+  }
+
+  function tick(){
+    if (!actx) return;
+    // вкладку могли увести в фон и заморозить таймер — тогда просто идём дальше от «сейчас»
+    if (nextTime < actx.currentTime) nextTime = actx.currentTime + .12;
+    while (nextTime < actx.currentTime + 1.8){
+      playBar(barNo++, nextTime);
+      nextTime += BAR;
+    }
+  }
+
+  function resume(){ if (actx && actx.state === 'suspended') actx.resume(); }
+
+  function start(){
+    if (started || !Ctx) return;
+    started = true;
+    actx = new Ctx();
+    master = actx.createGain();
+    master.gain.setValueAtTime(.0001, actx.currentTime);
+    master.gain.linearRampToValueAtTime(.24, actx.currentTime + 4);   // вплывает, а не бьёт по ушам
+    voices = actx.createGain();
+    const rv = reverb(), rvGain = actx.createGain();
+    rvGain.gain.value = .34;
+    voices.connect(master);
+    voices.connect(rvGain); rvGain.connect(rv); rv.connect(master);
+    master.connect(actx.destination);
+    nextTime = actx.currentTime + .25;
+    tick();
+    timer = setInterval(tick, 260);
+    deck.classList.add('playing');
+  }
+
+  // если она включит нашу песню в Spotify — шкатулку приглушаем, но не выключаем
+  function level(v, sec=1.6){
+    if (!master) return;
+    master.gain.cancelScheduledValues(actx.currentTime);
+    master.gain.setValueAtTime(master.gain.value, actx.currentTime);
+    master.gain.linearRampToValueAtTime(v, actx.currentTime + sec);
+  }
+
+  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) resume(); });
+  addEventListener('pointerdown', ()=>{ resume(); }, {passive:true});
+
+  return { start, resume, level, get on(){ return started; } };
+})();
+
 const deck = document.getElementById('deck');
-(function music(){
+(function musicUI(){
   const {type,id} = CONFIG.spotify;
   document.getElementById('spotify').src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
   document.getElementById('spotifyLink').href = `https://open.spotify.com/${type}/${id}`;
   document.getElementById('discTitle').textContent  = CONFIG.song.title;
   document.getElementById('discArtist').textContent = CONFIG.song.artist;
-  const toggle = ()=> deck.classList.toggle('playing');
-  deck.addEventListener('click', toggle);
+
+  // пластинку не останавливаем: нажатие только поднимает иглу и опускает обратно
+  const nudge = ()=>{
+    MUSIC.start(); MUSIC.resume();
+    deck.classList.add('playing');
+    deck.animate([{transform:'scale(1)'},{transform:'scale(.985)'},{transform:'scale(1)'}],
+                 {duration:340, easing:'ease-out'});
+  };
+  deck.addEventListener('click', nudge);
   deck.addEventListener('keydown', e => {
-    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+    if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); nudge(); }
   });
+  // трогает плеер Spotify — уводим шкатулку на задний план
+  document.querySelector('.sp-card').addEventListener('pointerdown', ()=> MUSIC.level(.05), true);
 })();
 
 /* ============================================================
-   ДИАЛОГ — сам разыгрывается, когда до него долистали
+   ИСТОРИЯ — маленький спектакль, который играется сам
+
+   Кадр задаёт только «где кто стоит» и «что показано». Всё остальное —
+   переходы между позициями — делает CSS, поэтому смена сцены выглядит
+   как движение, а не как перещёлкивание слайдов.
    ============================================================ */
-function playChat(){
-  const box = document.getElementById('chat');
-  const {me, her, lines} = CONFIG.chat;
-  box.innerHTML = '';
-  let i = 0;
+const stage   = document.getElementById('stage');
+const boyEl   = document.getElementById('boy');
+const girlEl  = document.getElementById('girl');
+const sayBoy  = document.getElementById('sayBoy');
+const sayGirl = document.getElementById('sayGirl');
+const capEl   = document.getElementById('cap');
+const daysText= document.getElementById('daysText');
 
-  const bubble = (who, text) => {
-    const p = who === 'me' ? me : her;
-    const el = document.createElement('div');
-    el.className = 'msg ' + who;
-    el.innerHTML = `<div class="who">${p.emoji}</div><div class="bubble"></div>`;
-    el.querySelector('.bubble').textContent = text;
-    box.appendChild(el);
-    box.scrollTo({top: box.scrollHeight, behavior:'smooth'});   // ведём за последним сообщением
-  };
+// где стоят герои в каждой сцене (координаты внутри viewBox 900×470)
+const FS = 1.22;                          // герои крупнее, чтобы кадр не был пустым
+const MARKS = {
+  1:{ boy:[452,400], girl:[930,400] },   // он один
+  2:{ boy:[300,400], girl:[664,400] },   // она появилась, он завис
+  3:{ boy:[486,400], girl:[628,400] },   // он подошёл
+  4:{ boy:[348,400], girl:[620,400] },   // свидание за столиком
+  5:{ boy:[430,400], girl:[526,400] },   // вместе
+  6:{ boy:[430,400], girl:[526,400] },
+  7:{ boy:[430,400], girl:[526,400] }
+};
+const BEAT_PROPS = ['notif','think','sweat','days'];
 
-  const next = () => {
-    if (i >= lines.length) return;
-    const [who, text] = lines[i++];
-    // «печатает…», чтобы разговор шёл в живом ритме
-    const dots = document.createElement('div');
-    dots.className = 'msg ' + who;
-    dots.innerHTML = `<div class="who">${(who==='me'?me:her).emoji}</div>
-                      <div class="bubble typing"><i></i><i></i><i></i></div>`;
-    box.appendChild(dots);
-    box.scrollTo({top: box.scrollHeight, behavior:'smooth'});
-    setTimeout(()=>{
-      dots.remove();
-      bubble(who, text);
-      setTimeout(next, 300 + Math.min(text.length, 30) * 14);
-    }, 380 + Math.min(text.length, 40) * 16);
-  };
-  next();
+function place(act){
+  const m = MARKS[act] || MARKS[1];
+  boyEl.style.transform  = `translate(${m.boy[0]}px,${m.boy[1]}px) scale(${FS})`;
+  girlEl.style.transform = `translate(${m.girl[0]}px,${m.girl[1]}px) scale(${FS})`;
+  girlEl.style.opacity   = act >= 2 ? '1' : '0';
+  stage.dataset.act = act;
+  stage.querySelectorAll('[data-acts]').forEach(el =>
+    el.classList.toggle('on', el.dataset.acts.split(' ').includes(String(act))));
 }
+
+function setSay(el, text){
+  if (!text){ el.classList.remove('on'); return; }
+  if (el.textContent === text){ el.classList.add('on'); return; }
+  const swap = ()=>{ el.textContent = text; requestAnimationFrame(()=>el.classList.add('on')); };
+  if (el.classList.contains('on')){ el.classList.remove('on'); setTimeout(swap, 230); }
+  else swap();
+}
+
+// счётчик дней тикает сам — «он всё ещё думает»
+let daysTimer = null;
+function runDays(){
+  clearInterval(daysTimer);
+  const seq = [1,2,3,4,5,6,7,8,9];
+  let k = 0;
+  daysText.textContent = 'день 1';
+  daysTimer = setInterval(()=>{
+    k++;
+    if (k >= seq.length){ clearInterval(daysTimer); daysText.textContent = 'день 9…'; return; }
+    daysText.textContent = 'день ' + seq[k];
+  }, 340);
+}
+
+let storyIdx = -1, storyTimer = null, storyDone = false;
+
+function showBeat(i){
+  const b = CONFIG.story[i];
+  if (!b) return;
+  storyIdx = i;
+
+  place(b.act);
+  if (b.walk){                       // шаги включаем ровно на время перехода
+    boyEl.classList.add('walk');
+    setTimeout(()=>boyEl.classList.remove('walk'), 1500);
+  }
+  boyEl.classList.toggle('frozen', !!b.freeze);
+
+  const show = b.show || [];
+  BEAT_PROPS.forEach(id =>
+    document.getElementById(id).classList.toggle('on', show.includes(id)));
+  if (b.days) runDays(); else clearInterval(daysTimer);
+
+  setSay(sayBoy,  b.boy);
+  setSay(sayGirl, b.girl);
+
+  // подпись сменяется мягко: сначала гаснет старая, потом проступает новая
+  capEl.classList.remove('on');
+  setTimeout(()=>{
+    capEl.textContent = b.cap || '';
+    if (b.cap) capEl.classList.add('on');
+  }, 280);
+
+  [...document.getElementById('beats').children]
+    .forEach((d,k)=> d.classList.toggle('on', k === i));
+
+  if (b.last){
+    storyDone = true;
+    const hint = document.getElementById('storyHint');
+    hint.style.opacity = '1';
+    bloomShower(10, 1.2);
+    return;
+  }
+  clearTimeout(storyTimer);
+  storyTimer = setTimeout(()=>showBeat(i+1), b.wait);
+}
+
+function playStory(){
+  if (storyIdx >= 0) return;
+  const dots = document.getElementById('beats');
+  dots.innerHTML = CONFIG.story.map(()=>'<i></i>').join('');
+  showBeat(0);
+}
+
+// нетерпеливым — можно листать кадры вручную
+document.querySelector('.stage-frame').addEventListener('click', ()=>{
+  if (storyIdx < 0 || storyDone) return;
+  clearTimeout(storyTimer);
+  showBeat(Math.min(storyIdx + 1, CONFIG.story.length - 1));
+});
+
+place(1);
+
+/* ============================================================
+   СЕРДЦЕ, В КОТОРОМ СПРЯТАН ВОПРОС
+
+   Осколки — это клинья, обрезанные по контуру самого сердца. Обрезка
+   едет вместе с клином, поэтому кусок улетает своей формы, а не
+   квадратом. Собираем один раз заранее, чтобы удар был мгновенным.
+   ============================================================ */
+const NS = 'http://www.w3.org/2000/svg';
+const heartWrap = document.getElementById('heartWrap');
+
+(function heartTexts(){
+  const h = CONFIG.heart;
+  document.getElementById('heartTitle').textContent = h.title;
+  document.getElementById('heartSub').textContent   = h.sub;
+  document.getElementById('heartNote').textContent  = h.note;
+  document.querySelector('#tapHint span').textContent = h.hint;
+})();
+
+function polar(cx,cy,a,r){
+  const t = a*Math.PI/180;
+  return [cx + Math.cos(t)*r, cy + Math.sin(t)*r];
+}
+
+(function buildHeartPieces(){
+  const shards = document.getElementById('shards');
+  const cracks = document.getElementById('cracks');
+  const cx = 120, cy = 92;
+
+  const wedge = (a0,a1,r0,r1) => {
+    const pts = [polar(cx,cy,a0,r0), polar(cx,cy,a0,r1), polar(cx,cy,a1,r1), polar(cx,cy,a1,r0)];
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('class','shard');
+    g.setAttribute('clip-path','url(#hclip)');
+    const poly = document.createElementNS(NS,'polygon');
+    poly.setAttribute('points', pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' '));
+    poly.setAttribute('fill','url(#hgradU)');
+    poly.setAttribute('stroke','rgba(255,255,255,.42)');
+    poly.setAttribute('stroke-width','1.1');
+    g.appendChild(poly);
+    g.dataset.ang = ((a0+a1)/2).toFixed(1);
+    shards.appendChild(g);
+  };
+
+  let a = rnd(0,360);
+  const SEC = 11;
+  for (let i=0;i<SEC;i++){
+    const a1 = a + 360/SEC * rnd(.72,1.28);
+    const mid = rnd(44,84);
+    wedge(a, a1, 0, mid);            // сердцевина
+    wedge(a, a1, mid, 330);          // край
+    a = a1;
+  }
+
+  // трещины: ломаные, разбегающиеся из середины
+  for (let i=0;i<6;i++){
+    let ang = i*60 + rnd(-16,16), r = 6, d = `M${cx},${cy}`;
+    while (r < 120){
+      r += rnd(15,30); ang += rnd(-24,24);
+      const [x,y] = polar(cx,cy,ang,r);
+      d += ` L${x.toFixed(1)},${y.toFixed(1)}`;
+    }
+    const p = document.createElementNS(NS,'path');
+    p.setAttribute('d', d);
+    p.setAttribute('clip-path','url(#hclip)');
+    p.style.setProperty('--l','300');
+    p.style.setProperty('--cd2', (i*0.05).toFixed(2)+'s');
+    cracks.appendChild(p);
+  }
+  shards.style.opacity = '0';
+})();
+
+let broken = false;
+function breakHeart(){
+  if (broken) return;
+  broken = true;
+  document.getElementById('heartNote').style.opacity = '0';
+  document.getElementById('tapHint').style.opacity   = '0';
+  document.getElementById('heartSub').style.opacity  = '0';
+  heartWrap.classList.add('cracking');
+  heartWrap.style.cursor = 'default';
+
+  setTimeout(()=>{
+    document.getElementById('heartWhole').style.opacity = '0';
+    const shards = document.getElementById('shards');
+    shards.style.opacity = '1';
+    for (const g of shards.children){
+      const ang = +g.dataset.ang * Math.PI/180;
+      const dist = rnd(110, 330);
+      const dx = Math.cos(ang)*dist, dy = Math.sin(ang)*dist;
+      const rot = rnd(-150,150).toFixed(0);
+      // осколок держит цвет почти весь полёт и гаснет только в конце —
+      // иначе разлёт «съедается» затуханием и его почти не видно
+      g.animate([
+        { transform:'translate(0px,0px) rotate(0deg)', opacity:1, offset:0 },
+        { transform:`translate(${(dx*.42).toFixed(0)}px,${(dy*.42 - 14).toFixed(0)}px) ` +
+                    `rotate(${(rot/3).toFixed(0)}deg)`, opacity:1, offset:.42 },
+        { transform:`translate(${dx.toFixed(0)}px,${(dy + rnd(60,180)).toFixed(0)}px) ` +
+                    `rotate(${rot}deg)`, opacity:0, offset:1 }
+      ], { duration: rnd(1300,2100), easing:'cubic-bezier(.2,.55,.4,1)', fill:'forwards' });
+    }
+    burst(60);
+    bloomShower(12, .9);
+    document.getElementById('heartTitle').textContent = CONFIG.heart.broken;
+
+    setTimeout(()=>{
+      heartWrap.classList.add('gone');
+      const card = document.getElementById('askCard');
+      card.classList.remove('hidden');
+      requestAnimationFrame(()=>{
+        card.classList.add('in');
+        card.scrollIntoView({behavior:'smooth', block:'center'});
+      });
+    }, 950);
+  }, 520);
+}
+heartWrap.addEventListener('click', breakHeart);
+heartWrap.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); breakHeart(); }
+});
 
 /* ============================================================
    ФИНАЛ: вопрос, ради которого всё и затевалось
@@ -1238,6 +2100,29 @@ const askCard = document.getElementById('askCard');
 const noBtn   = document.getElementById('noBtn');
 const yesBtn  = document.getElementById('yesBtn');
 let dodged = 0, said = false;
+
+/* Праздник — короткий: цветы взлетают и оседают, а жить на экране
+   остаётся сад. Возвращать бесконечный ливень мы не будем. */
+function heartsUp(n=18){
+  for (let i=0;i<many(n);i++){
+    const el = document.createElement('div');
+    el.className = 'fheart';
+    el.textContent = pick(['💗','💖','🌷','💕','🌸']);
+    el.style.cssText =
+      `left:${rnd(2,96).toFixed(1)}%;font-size:${rnd(18,44).toFixed(0)}px;` +
+      `--hd:${rnd(5,9).toFixed(1)}s;--hr:${rnd(-40,40).toFixed(0)}deg;` +
+      `animation-delay:${rnd(0,2.4).toFixed(1)}s`;
+    bloomL.appendChild(el);
+    setTimeout(()=>el.remove(), 12000);
+  }
+}
+function celebrate(){
+  flowerStorm(340, 3.4);
+  bloomShower(34, 2.2);
+  heartsUp(22);
+  growGarden(HEAVY < 1 ? 10 : 18, 1.6);
+  spawnBugs(CALM ? 1 : 5);
+}
 
 document.getElementById('askQ').textContent = CONFIG.proposal.question;
 yesBtn.textContent = CONFIG.proposal.yes;
@@ -1263,10 +2148,7 @@ yesBtn.addEventListener('click', ()=>{
   if (said) return;
   said = true;
 
-  // весь экран в цветах — так же, как в самом начале
-  curtainFall();
-  bloomShower(30, 1.8);
-  growGarden(12, 1);
+  celebrate();
 
   askCard.classList.add('gone');
   const after = document.getElementById('after');
