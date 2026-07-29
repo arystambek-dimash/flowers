@@ -1,9 +1,9 @@
-# Сюда кладём фото
+# Photos go here
 
-Положи сюда снимок с именем `1` — расширение любое: `1.jpg`, `1.jpeg`,
-`1.png` или `1.webp`. Страница сама найдёт нужный файл.
+Drop a picture in here named `1` — any extension will do: `1.jpg`, `1.jpeg`,
+`1.png` or `1.webp`. The page finds the right file on its own.
 
-Квадратная фотография смотрится лучше всего: пазл 3×3 квадратный,
-а вертикальный кадр обрежется по центру.
+A square photograph looks best: the 3×3 puzzle is square, so a portrait shot
+gets cropped through the centre.
 
-Пока файла нет, на странице показывается нарисованная заглушка.
+With no file here, the page shows a drawn placeholder instead.
