@@ -1,145 +1,151 @@
-# 🌸 Открой меня
+# 🌸 Open me
 
-Одностраничный сюрприз. Нажимаешь **«Открой меня»** — сверху сплошным
-полотном валятся цветы, полностью закрывают экран, а когда полотно уходит
-вниз, за ним уже стоит пазл из вашей фотографии. Экран в этот момент закрыт
-целиком, поэтому подмены не видно — как у фокусника со шторой.
+A one-page surprise. You press **"Open me"** — flowers come down from the top
+as one solid sheet, cover the screen completely, and when the sheet passes,
+a puzzle made of your photo is already standing behind it. The screen is fully
+covered at that moment, so the swap is never seen — like a magician with
+a curtain.
 
-И там же, за занавесом, ливень заканчивается насовсем. На его месте вырастает
-сад: трава вдоль нижнего края, цветы на стеблях, которые распускаются по мере
-прокрутки, и бабочки с пчёлами, летающие над ними. Дальше цветы падают только
-в редкие праздничные секунды — когда собран пазл, когда разбито сердце, когда
-сказано «да».
+And right there, behind the curtain, the downpour ends for good. A garden grows
+in its place: grass along the bottom edge, flowers on stems that open as you
+scroll, and butterflies and bees flying above them. From then on flowers only
+fall in the rare celebratory seconds — when the puzzle is solved, when the heart
+is broken, when she says yes.
 
-С первого же нажатия включается музыка — и больше не выключается. Это не файл,
-а живая шкатулка: аккорды идут по кругу, а мелодия сверху каждый раз
-складывается заново, поэтому она не кончается и не надоедает.
+Music starts with that very first tap and never stops again. It is not a file
+but a living music box: the chords go round and the melody on top is composed
+fresh every time, so it never ends and never wears out.
 
-Дальше всё ведёт само. Собрала пазл — страница хвалит и увозит к
-проигрывателю с вашей песней. Ниже разыгрывается **история в кадрах**: как она
-подписалась первой, как он завис на девять дней, как всё-таки решился, первое
-свидание, и как обычные дни стали общими. В конце он говорит: «я хочу тебе
-кое-что сказать» — «что?» — «листай ниже».
+Everything leads itself from there. Solve the puzzle and the page praises her
+and carries her down to the turntable with your song. Below that, the **story
+plays out frame by frame**: how she followed first, how he froze for nine days,
+how he finally worked up the nerve, the first date, and how ordinary days became
+shared ones. At the end he says: "there's something I want to tell you" —
+"what?" — "scroll down".
 
-А ниже — **сердце, которое надо разбить**. Клик: оно трескается, разлетается
-осколками, и за ним оказывается спрятан вопрос: **«Будешь моей девушкой?»**,
-где кнопка «нет» отпрыгивает от пальца. После «да» взлетают цветы и сердечки,
-раскрывается письмо и последняя строка выводит из экрана в жизнь — туда, где
-ты уже стоишь с настоящим букетом.
+And below that is **a heart you have to break**. One click: it cracks, bursts
+into shards, and behind it the question is waiting: **"Will you be my
+girlfriend?"**, where the "no" button jumps away from her finger. After "yes"
+flowers and hearts rise, a letter unfolds, and the last line leads out of the
+screen into real life — to where you are already standing with an actual bouquet.
 
-Всё в одном файле `index.html`. Ни сборки, ни зависимостей, ни картинок и
-звуков из интернета — цветы рисуются вектором прямо в браузере, герои
-нарисованы в SVG, музыка синтезируется на лету.
+It is all one file, `index.html`. No build, no dependencies, no images or sounds
+pulled from the internet — the flowers are drawn as vectors right in the browser,
+the two characters are embedded artwork, and the music is synthesised on the fly.
 
-В этой версии: герои нарисованы нейросетью Recraft в милом векторном стиле
-под вас (он — волнистые тёмные волосы и бордово-белая олимпийка, она —
-длинные тёмные волосы, очки на макушке и белая блуза), история играется
-как motion-graphics explainer: герои въезжают в кадр с разных сторон,
-реплики висят пузырями прямо над их головами и следуют за ними, у каждого
-кадра есть титр-чип с номером («03 · РЕШИЛСЯ»), «камера» мягко наезжает
-между актами, подписи влетают по словам, дни считает гигантский счётчик,
-прогресс показывает полоска со счётчиком «кадр N / 12». Сцена живая:
-качаются деревья, в дневных кадрах пролетают птицы и крутятся лучи солнца,
-вечером вылетают светлячки, а передний план травы даёт глубину.
+In this version the characters were drawn to look like the two of you (him:
+wavy dark hair and a maroon-and-white track jacket; her: long dark hair,
+sunglasses on top of her head and a white blouse), and the story plays like a
+motion-graphics explainer: the actors slide in from opposite edges, their lines
+hang in bubbles right above their heads and travel with them, every frame gets
+a numbered title chip ("03 · I WENT FOR IT"), the camera eases in between acts,
+the narration flies in word by word, a giant counter ticks off the days, and a
+progress bar with a "frame N / 12" readout tracks where you are. The scene is
+alive: trees sway, birds cross the daytime frames while the sun's rays turn,
+fireflies come out in the evening, and a band of foreground grass gives depth.
 
-Персонажи и фото пазла вшиты прямо в `index.html` — страница работает
-даже одним файлом, без папки. При перезагрузке страница сама возвращается
-наверх, к кнопке «Открой меня». Перед выходом в жизнь есть пауза
-«закрой глаза… раз, два, три» — ровно столько, чтобы достать букет.
-Совместное фото уже лежит в `photos/1.jpg` и стоит в пазле (второй вариант
-фото — `photos/2.jpg`, можно поменять в `CONFIG.photo`). Исходники героев —
-`boy_recraft.svg` и `girl_recraft.svg`, прозрачные версии для сцены —
-`boy_char.png` и `girl_char.png`.
+The characters and the puzzle photo are embedded directly in `index.html`, so
+the page works as a single file, without the folder. On reload the page returns
+to the top on its own, back to the "Open me" button. Before the step out into
+real life there is a pause — "close your eyes… one, two, three" — exactly long
+enough to pick up the bouquet. The photo of the two of you is already in
+`photos/1.jpg` and set in the puzzle (the second option is `photos/2.jpg`, swap
+it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
+`girl_recraft.svg`; the transparent versions used on stage are `boy_char.png`
+and `girl_char.png`.
 
-## Полная версия песни
+## The full version of the song
 
-Вставка Spotify без Premium-логина в браузере играет только 30 секунд —
-это ограничение самого Spotify, обойти его со стороны страницы нельзя.
-Поэтому страница умеет играть полный файл: положи mp3 вашей песни рядом с
-`index.html` под именем **`music.mp3`** — она подхватится автоматически и
-будет крутиться по кругу вместо встроенной шкатулки. Если файла нет —
-играет шкатулка, как раньше. (Если она залогинена в Spotify Premium в этом
-браузере, полный трек играет и прямо во вставке.)
+Without a Premium login in the browser, the Spotify embed plays only 30 seconds
+— that is Spotify's own limit and nothing on the page can work around it. So the
+page can play a full file instead: put the mp3 of your song next to
+`index.html` under the name **`music.mp3`** and it will be picked up
+automatically and looped in place of the built-in music box. With no file there,
+the music box plays, as before. (If she is logged into Spotify Premium in that
+browser, the full track plays right in the embed too.)
 
-## Как открыть
+## How to open it
 
-Просто дважды кликнуть по `index.html`.
+Just double-click `index.html`.
 
-Если хочешь, чтобы подтянулось фото из папки `photos/` — нужен локальный сервер
-(браузер не отдаёт локальные файлы со страницы, открытой как `file://`):
+If you want the photo from the `photos/` folder to load, you need a local server
+(the browser will not serve local files to a page opened as `file://`):
 
 ```bash
 python3 -m http.server 8000
-# затем открой http://localhost:8000
+# then open http://localhost:8000
 ```
 
-## Что настроить под себя
+## What to customise
 
-Всё в начале `<script>` в `index.html`, в блоке `CONFIG`:
+Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` block:
 
-| Что | Как |
+| What | How |
 |---|---|
-| **Песня** | `CONFIG.spotify` — вставь ID трека или плейлиста. Берётся из ссылки: `open.spotify.com/track/`**`0tgVpDi06...`**. Для плейлиста поставь `type: 'playlist'`. |
-| **Надпись на пластинке** | `CONFIG.song` — название и подпись на этикетке винила. |
-| **Фото для пазла** | Положи снимок в `photos/` под именем `1` — расширение любое (`.jpg`, `.jpeg`, `.png`, `.webp`), страница сама найдёт нужное. Пока файла нет, показывается нарисованная заглушка. Квадратные фото смотрятся лучше всего. |
-| **История** | `CONFIG.story` — массив кадров. У каждого: `act` — какая сцена (1 он один, 2 она подписалась, 3 он подошёл, 4 свидание, 5–7 вместе), `boy` и `girl` — реплики, `cap` — подпись рассказчика, `wait` — сколько держать кадр в миллисекундах. Дополнительно: `walk` — идёт, `freeze` — стоит и вздрагивает, `days` — тикает счётчик дней, `show` — что показать (`notif`, `think`, `sweat`, `days`), `last` — последний кадр. |
-| **Похвала за пазл** | `CONFIG.puzzleDone` и `CONFIG.puzzleNext`. |
-| **Сердце** | `CONFIG.heart` — заголовок, подсказки и что написать над вопросом после того, как сердце разбито. |
-| **Вопрос** | `CONFIG.proposal` — сам вопрос, подписи кнопок, отговорки убегающей «нет» и что появится после «да». |
-| **Письмо** | `CONFIG.letter` — массив, каждая строка = абзац. Подпись — `CONFIG.signature`. |
-| **Выход в жизнь** | `CONFIG.irl` и `CONFIG.irlSub` — последние строки, после которых ты достаёшь настоящие цветы. |
+| **Song** | `CONFIG.spotify` — paste the id of a track or a playlist. It comes from the link: `open.spotify.com/track/`**`0tgVpDi06...`**. For a playlist set `type: 'playlist'`. |
+| **Record label text** | `CONFIG.song` — the title and the line printed on the vinyl label. |
+| **Puzzle photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
+| **Story** | `CONFIG.story` — an array of frames. Each has: `act` — which scene (1 he is alone, 2 she followed, 3 he walks over, 4 the date, 5–7 together), `boy` and `girl` — their lines, `cap` — the narrator's caption, `title` — the frame headline, `wait` — how long to hold the frame in milliseconds. Plus: `walk` — he is walking, `freeze` — he stands there twitching, `days` — run the day counter, `show` — what to reveal (`notif`, `think`, `sweat`, `days`), `last` — the final frame. |
+| **Puzzle praise** | `CONFIG.puzzleDone` and `CONFIG.puzzleNext`. |
+| **Heart** | `CONFIG.heart` — the heading, the hints, and what to write above the question once the heart is broken. |
+| **Question** | `CONFIG.proposal` — the question itself, the button labels, the excuses of the dodging "no", and what appears after "yes". |
+| **Letter** | `CONFIG.letter` — an array, one line per paragraph. The signature is `CONFIG.signature`. |
+| **Step into real life** | `CONFIG.irl` and `CONFIG.irlSub` — the last lines, after which you hand over the real flowers. |
 
-## Что происходит на экране
+## What happens on screen
 
-- **Цветы.** `buildFlower()` собирает цветок из лепестков: 6 форм (пион, роза,
-  анемона, циния, сакура, ранункулюс), случайные палитры, число и разворот
-  лепестков. Пул из 80 таких цветов один раз запекается в картинки, дальше
-  ливень рисуется спрайтами на одном холсте — так их может быть под тысячу,
-  а не полторы сотни, как было бы при отрисовке каждого отдельным элементом.
-- **Траектории.** Шесть характеров полёта: ровное падение, зигзаг, планирование
-  со сносом, трепет лепестка, кувырок через ребро, закрутка. Плюс три плана
-  глубины: дальние мелкие и размытые падают медленно, ближние крупные — быстро.
-- **Плотность подстраивается.** Движок следит за длиной кадра и, если устройство
-  не тянет, тихо прореживает дальний план; когда появляется запас — возвращает
-  густоту.
-- **Занавес.** Цветы для него не разбрасываются наугад: нужное число считается
-  от площади экрана, а размер — от его меньшей стороны (иначе на широком
-  мониторе те же цветы мелковаты и оставляют просветы). Расставляются по сетке
-  над экраном и падают с почти одинаковой скоростью — разброс расслоил бы
-  полотно и продырявил его ровно посередине. Замеренное покрытие в момент
-  подмены — 98–100%.
-- **Сад вместо ливня.** Как только занавес ушёл, `stopRain()` перестаёт
-  возвращать цветы наверх, и уже летящие спокойно долетают до низа. Дальше
-  экран держат трава (нарезается под ширину окна и качается на ветру), клумба
-  из растущих цветов и бабочки. У бабочки три вложенных слоя движения —
-  перелёт поперёк экрана, покачивание вверх-вниз и наклон, — поэтому полёт
-  выглядит живым, а не как езда по прямой. Крылья машут отдельно.
-- **Музыка.** Собственный синтезатор на Web Audio: бас, подушка из аккордов и
-  колокольчики поверх. Ноты берутся из пентатоники, а мелодия ходит рядом с
-  предыдущей нотой — получается линия, а не набор писков. Ноты планируются
-  на полторы секунды вперёд, поэтому ритм ровный; если вкладку увели в фон и
-  таймер заморозили, петля просто продолжается от «сейчас». Если включить
-  свою песню в Spotify, шкатулка уходит на задний план, но не выключается.
-- **История** — не переписка, а маленький спектакль в SVG. Кадр задаёт только
-  где кто стоит и что показано; переходы между позициями делает CSS, поэтому
-  смена сцены выглядит как движение, а не как перещёлкивание слайдов. Небо
-  меняется с дневного на вечернее, у него загораются звёзды, а земля уходит
-  в сумерки. По кадрам можно листать вручную, если ждать не хочется.
-- **Пластинка** — деревянный корпус, фетровый слипмат, дорожки и кольца между
-  треками, тонарм с противовесом и головкой звукоснимателя. Блик от лампы лежит
-  отдельным неподвижным слоем: он не крутится вместе с диском, поэтому винил
-  и читается как винил.
-- **Сердце.** Осколки — клинья, обрезанные по контуру самого сердца; обрезка
-  едет вместе с клином, поэтому кусок улетает своей формы, а не квадратом.
-  Сначала бегут трещины, потом сердце вздрагивает и разлетается, и за ним
-  оказывается карточка с вопросом.
-- **Вопрос.** Кнопка «нет» отпрыгивает при каждой попытке, отшучивается
-  и через пять раз исчезает совсем. «Да» всегда лежит выше неё по слоям,
-  чтобы убегающая кнопка не перехватила нажатие в самый нужный момент.
-- **Касания.** Нажатие в любом месте распускает цветок под пальцем.
-- **Пазл** — сетка 3×3, плитки меняются местами по нажатию. Когда всё сходится,
-  поверх проявляется цельная фотография.
-- **После «да»** — салют из цветов и взлетающих сердечек, письмо печатается по
-  буквам, и последним появляется обращение к настоящей жизни.
+- **Flowers.** `buildFlower()` assembles a flower out of petals: 6 shapes (peony,
+  rose, anemone, zinnia, blossom, ranunculus), random palettes, random petal
+  counts and rotations. A pool of 80 such flowers is baked into images once, and
+  from then on the downpour is drawn as sprites on a single canvas — that is how
+  there can be close to a thousand of them instead of the hundred and a half you
+  would get by drawing each as its own element.
+- **Trajectories.** Six flight characters: a straight fall, a zigzag, a glide
+  with drift, a petal's flutter, a tumble over the edge, and a spiral. Plus three
+  depth planes: the far ones are small, blurred and slow; the near ones large and
+  fast.
+- **The density adapts.** The engine watches the frame time and, if the device
+  cannot keep up, quietly thins out the far plane; when there is room to spare it
+  brings the density back.
+- **The curtain.** Its flowers are not scattered at random: the count is derived
+  from the screen area and the size from its shorter side (otherwise on a wide
+  monitor the same flowers are too small and leave gaps). They are laid out on a
+  grid above the screen and fall at almost identical speeds — spread would
+  delaminate the sheet and punch a hole right through the middle of it. Measured
+  coverage at the moment of the swap is 98–100%.
+- **A garden instead of the downpour.** As soon as the curtain has passed,
+  `stopRain()` stops returning flowers to the top and the ones still in the air
+  calmly land. From then on the screen is held by grass (cut to the window width
+  and swaying in the wind), a bed of growing flowers, and butterflies. A butterfly
+  has three nested layers of movement — the crossing of the screen, the up-and-down
+  bobbing, and the tilt — which is what makes the flight look alive instead of a
+  ride along a straight line. The wings flap separately.
+- **Music.** A synthesiser of its own on Web Audio: bass, a pad of chords and
+  bells on top. Notes come from a pentatonic scale, and the melody walks near its
+  previous note, which makes a line rather than a set of beeps. Notes are
+  scheduled a second and a half ahead, so the rhythm stays even; if the tab is
+  backgrounded and the timer frozen, the loop simply carries on from "now". Start
+  your own song on Spotify and the music box steps back but never switches off.
+- **The story** is not a chat log but a little play. A frame says only who stands
+  where and what is shown; the moves between positions are done by CSS, which is
+  why a scene change looks like movement rather than slides being clicked through.
+  The sky turns from day to evening, stars come out, and the ground sinks into
+  dusk. Frames can be stepped through by hand if you would rather not wait.
+- **The turntable** — wooden plinth, felt slipmat, grooves and bands between the
+  tracks, a tonearm with a counterweight and a cartridge head. The lamp glare sits
+  on its own motionless layer: it does not spin with the disc, which is what makes
+  vinyl read as vinyl.
+- **The heart.** The shards are wedges clipped to the heart's own outline; the
+  clip travels with the wedge, so a piece flies off in its own shape rather than
+  as a rectangle. First the cracks run, then the heart shudders and bursts, and
+  behind it is the card with the question.
+- **The question.** The "no" button jumps away on every attempt, cracks a joke and
+  after five tries disappears entirely. "Yes" always sits above it in the stacking
+  order, so the dodging button can never steal the tap at the moment that counts.
+- **Touches.** A tap anywhere blooms a flower under your finger.
+- **The puzzle** — a 3×3 grid, tiles swap on tap. When it all lines up, the whole
+  photograph fades in over the top.
+- **After "yes"** — a salute of flowers and rising hearts, the letter types itself
+  out letter by letter, and last of all comes the line addressed to real life.
 
-Работает на телефоне, поддерживает `prefers-reduced-motion`.
+Works on a phone, and honours `prefers-reduced-motion`.
