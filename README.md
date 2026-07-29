@@ -12,9 +12,14 @@ scroll, and butterflies and bees flying above them. From then on flowers only
 fall in the rare celebratory seconds — when the puzzle is solved, when the heart
 is broken, when she says yes.
 
-Music starts with that very first tap and never stops again. It is not a file
-but a living music box: the chords go round and the melody on top is composed
-fresh every time, so it never ends and never wears out.
+Music starts with that very first tap and never stops again. Nothing here is a
+recording: the page carries five short pieces of its own — *first light*, *slow
+dance*, *the long walk home*, *three in the morning*, *you said yes* — each in a
+different key, tempo and instrument colour. They play one after another in a
+shuffled order, and when all five have played the order is shuffled again, so
+the music neither runs out nor starts repeating itself. What is on right now is
+written on the vinyl label and on the strip under the turntable. Drop your own
+mp3 files next to the page and they take over as a playlist instead.
 
 Everything leads itself from there. Solve the puzzle and the page praises her
 and carries her down to the turntable with your song. Below that, the **story
@@ -54,15 +59,29 @@ it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
 `girl_recraft.svg`; the transparent versions used on stage are `boy_char.png`
 and `girl_char.png`.
 
-## The full version of the song
+## Your own songs
 
 Without a Premium login in the browser, the Spotify embed plays only 30 seconds
 — that is Spotify's own limit and nothing on the page can work around it. So the
-page can play a full file instead: put the mp3 of your song next to
-`index.html` under the name **`music.mp3`** and it will be picked up
-automatically and looped in place of the built-in music box. With no file there,
-the music box plays, as before. (If she is logged into Spotify Premium in that
-browser, the full track plays right in the embed too.)
+page plays full files of its own instead: drop mp3s next to `index.html` and
+list them in `CONFIG.musicFiles`:
+
+```js
+musicFiles: ['music.mp3', 'music2.mp3', 'music3.mp3', 'music4.mp3'],
+// or, to give a track a nicer name than its filename:
+musicFiles: [{ file:'music.mp3', title:'the one from the car' }, 'music2.mp3'],
+```
+
+Every file listed is probed once; whichever ones are actually there become a
+playlist that is shuffled, played through, and started over again, for as long
+as the page is open. The seam between tracks is a crossfade, not a gap — two
+audio elements take turns so the next track is already buffered. Files that are
+not there are dropped silently, and if none of them answer (or the browser
+refuses to autoplay them) the five built-in pieces play instead. Silence is the
+one outcome the page will not produce.
+
+(If she is logged into Spotify Premium in that browser, the full track plays
+right in the embed too.)
 
 ## How to open it
 
@@ -83,7 +102,8 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
 | What | How |
 |---|---|
 | **Song** | `CONFIG.spotify` — paste the id of a track or a playlist. It comes from the link: `open.spotify.com/track/`**`0tgVpDi06...`**. For a playlist set `type: 'playlist'`. |
-| **Record label text** | `CONFIG.song` — the title and the line printed on the vinyl label. |
+| **Your songs** | `CONFIG.musicFiles` — a list of mp3 files next to `index.html`. The ones that exist become a shuffled playlist that loops forever. Leave it empty and the five built-in pieces play instead. |
+| **Record label text** | `CONFIG.song` — the fallback title and the line printed under it on the vinyl label. |
 | **Puzzle photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
 | **Story** | `CONFIG.story` — an array of frames. Each has: `act` — which scene (1 he is alone, 2 she followed, 3 he walks over, 4 the date, 5–7 together), `boy` and `girl` — their lines, `cap` — the narrator's caption, `title` — the frame headline, `wait` — how long to hold the frame in milliseconds. Plus: `walk` — he is walking, `freeze` — he stands there twitching, `days` — run the day counter, `show` — what to reveal (`notif`, `think`, `sweat`, `days`), `last` — the final frame. |
 | **Puzzle praise** | `CONFIG.puzzleDone` and `CONFIG.puzzleNext`. |
@@ -120,12 +140,16 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
   has three nested layers of movement — the crossing of the screen, the up-and-down
   bobbing, and the tilt — which is what makes the flight look alive instead of a
   ride along a straight line. The wings flap separately.
-- **Music.** A synthesiser of its own on Web Audio: bass, a pad of chords and
-  bells on top. Notes come from a pentatonic scale, and the melody walks near its
-  previous note, which makes a line rather than a set of beeps. Notes are
-  scheduled a second and a half ahead, so the rhythm stays even; if the tab is
-  backgrounded and the timer frozen, the loop simply carries on from "now". Start
-  your own song on Spotify and the music box steps back but never switches off.
+- **Music.** A synthesiser of its own on Web Audio, playing five pieces that take
+  turns. Each piece has its own key, chord progression, tempo and voice — a bell
+  that rings long and bright, rounder keys, a pluck whose filter closes as it
+  decays, and glass that hangs quietly in the air. Notes come from a pentatonic
+  scale and the melody walks near its previous note, which makes a line rather
+  than a set of beeps; each piece resolves on a high note in its last bar so the
+  handover to the next one sounds intended. Notes are scheduled a second and a
+  half ahead, so the rhythm stays even; if the tab is backgrounded and the timer
+  frozen, the loop simply carries on from "now". Start your own song on Spotify
+  and our sound steps back but never switches off.
 - **The story** is not a chat log but a little play. A frame says only who stands
   where and what is shown; the moves between positions are done by CSS, which is
   why a scene change looks like movement rather than slides being clicked through.
