@@ -238,11 +238,12 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
 .record .bands{position:absolute;inset:2%;border-radius:50%;
   background:repeating-radial-gradient(circle,
     transparent 0 26px, rgba(255,255,255,.10) 26px 27.5px, transparent 27.5px 30px)}
-.record .label{position:absolute;inset:31%;border-radius:50%;
+.record .label{position:absolute;inset:31%;border-radius:50%;overflow:hidden;
   background:radial-gradient(circle at 40% 34%,#f6b9c9,#d16a89 60%,#b8567a);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
   color:#fff;text-align:center;padding:8px;box-shadow:inset 0 0 10px rgba(120,30,60,.45)}
-.record .label b{font-weight:400;font-size:.6rem;letter-spacing:.06em;line-height:1.2}
+.record .label b{font-weight:400;font-size:.5rem;letter-spacing:.04em;line-height:1.16;
+  max-width:100%;overflow-wrap:anywhere}
 .record .label i{font-style:normal;font-size:.5rem;opacity:.82;letter-spacing:.04em}
 
 /* lamp glare: it does not spin with the record, which is what makes vinyl read as vinyl */
@@ -282,6 +283,31 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
   box-shadow:0 2px 4px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,220,190,.25)}
 .knobs span.on{background:radial-gradient(circle at 36% 32%,#e79ab0,#c05a7d);color:#fff}
 
+.deck-col{display:flex;flex-direction:column;align-items:center;gap:12px;flex:0 0 auto}
+
+/* what is playing right now, under the deck */
+.nowplay{display:flex;align-items:center;gap:10px;max-width:min(74vw,340px);
+  padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.88);
+  border:1px solid #f2dde4;box-shadow:0 12px 28px -20px rgba(150,80,110,.9);
+  font-size:.92rem;color:var(--ink);letter-spacing:.02em}
+.np-eq{display:flex;align-items:flex-end;gap:2.5px;height:14px;flex:0 0 auto}
+.np-eq i{width:3px;height:40%;border-radius:2px;background:var(--rose-deep);
+  animation:eq .95s ease-in-out infinite}
+.np-eq i:nth-child(2){animation-delay:.16s}
+.np-eq i:nth-child(3){animation-delay:.34s}
+.np-eq i:nth-child(4){animation-delay:.5s}
+@keyframes eq{0%,100%{height:28%}50%{height:100%}}
+.np-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* the whole little album, so it is clear there is more than one */
+.np-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  max-width:min(80vw,360px)}
+.np-list span{font-size:.72rem;letter-spacing:.04em;padding:4px 10px;border-radius:999px;
+  color:var(--ink-soft);background:rgba(255,255,255,.7);border:1px solid #f3e2e8;
+  transition:color .5s ease,background .5s ease,border-color .5s ease}
+.np-list span.on{color:#fff;border-color:transparent;
+  background:linear-gradient(135deg,#f2a3b8,var(--rose-deep))}
+
 .sp-card{flex:1 1 300px;max-width:420px;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);
   border:1px solid #f2dde4;border-radius:22px;padding:16px;box-shadow:var(--shadow)}
 .sp-head{display:flex;align-items:center;gap:9px;font-size:.95rem;color:var(--ink-soft);
@@ -289,6 +315,7 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
 .player{border-radius:14px;overflow:hidden}
 .player iframe{display:block;width:100%;height:352px;border:0}
 .sp-link{display:inline-block;margin:12px 4px 2px;color:var(--rose-deep);font-size:.9rem}
+.sp-note{margin:6px 4px 0;font-size:.78rem;line-height:1.5;color:var(--ink-soft);opacity:.85}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ============ THE STORY, FRAME BY FRAME ============ */
@@ -563,6 +590,8 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   .deck{width:min(56vw,210px)}
   .player iframe{height:152px}     /* compact player, otherwise the section does not fit */
   .sp-card{padding:12px}
+  .nowplay{font-size:.84rem;padding:8px 13px}
+  .np-list span{font-size:.68rem;padding:3px 8px}
   .stage-frame{padding:7px;border-radius:22px}
   .say{max-width:min(58vw,220px);padding:6px 9px;border-radius:13px;font-size:.72rem;line-height:1.34}
   .stage-frame{padding:6px}
@@ -620,28 +649,36 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
 <section class="scene" id="musicScene">
   <div class="wrap reveal">
     <h2>Our song</h2>
-    <p class="sub" style="margin-bottom:34px">The music is already playing, and it will not end.<br>
-      And if you want our song, start it right here.</p>
+    <p class="sub" style="margin-bottom:34px">Five little pieces are taking turns below, and they never run out.<br>
+      And if you want <em>our</em> song, start it right here.</p>
 
     <div class="turntable">
-      <!-- turntable -->
-      <div class="deck" id="deck" role="button" tabindex="0" aria-label="Turntable">
-        <div class="platter">
-          <div class="record">
-            <div class="grooves"></div>
-            <div class="bands"></div>
-            <div class="label"><b id="discTitle">our song</b><i id="discArtist"></i></div>
+      <!-- turntable, with what is playing right under it -->
+      <div class="deck-col">
+        <div class="deck" id="deck" role="button" tabindex="0" aria-label="Turntable">
+          <div class="platter">
+            <div class="record">
+              <div class="grooves"></div>
+              <div class="bands"></div>
+              <div class="label"><b id="discTitle">our song</b><i id="discArtist"></i></div>
+            </div>
+            <div class="sheen"></div>
+            <div class="spindle"></div>
           </div>
-          <div class="sheen"></div>
-          <div class="spindle"></div>
+          <div class="tonearm">
+            <div class="cw"></div>
+            <div class="pivot"></div>
+            <div class="tube"></div>
+            <div class="head"></div>
+          </div>
+          <div class="knobs"><span class="on">33</span><span>45</span></div>
         </div>
-        <div class="tonearm">
-          <div class="cw"></div>
-          <div class="pivot"></div>
-          <div class="tube"></div>
-          <div class="head"></div>
+
+        <div class="nowplay">
+          <span class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="np-title" id="npTitle"></span>
         </div>
-        <div class="knobs"><span class="on">33</span><span>45</span></div>
+        <div class="np-list" id="npList" aria-hidden="true"></div>
       </div>
 
       <!-- the Spotify card beside it -->
@@ -656,6 +693,8 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
         </div>
         <div class="player"><iframe id="spotify" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>
         <a id="spotifyLink" href="#" target="_blank" rel="noopener" class="sp-link">open in Spotify ↗</a>
+        <p class="sp-note">Spotify only lets a page play 30 seconds without a login —
+          the turntable on the left has no such limit.</p>
       </div>
     </div>
   </div>
@@ -1102,12 +1141,14 @@ const CONFIG = {
   // With no file there, a drawn placeholder takes its place.
   photo: 'photos/1.jpg',
 
-  // The FULL version of your song. Without a Premium login the Spotify embed
-  // plays only 30 seconds — that is Spotify's own limit and cannot be worked
-  // around. What you can do is put an mp3 next to index.html named music.mp3:
-  // the page picks it up on its own and loops the whole song instead of the
-  // built-in music box.
-  musicFile: 'music.mp3',
+  // Your own songs, in full. Without a Premium login the Spotify embed plays
+  // only 30 seconds — that is Spotify's own limit and nothing here can work
+  // around it. What you can do is drop mp3 files next to index.html and list
+  // them below: whichever ones are actually there become a playlist that plays
+  // through and starts over, for as long as the page is open. Write a name for
+  // a track as { file:'…', title:'…' } if the filename is not pretty enough.
+  // With no files at all, the page plays five short pieces of its own instead.
+  musicFiles: ['music.mp3', 'music2.mp3', 'music3.mp3', 'music4.mp3'],
 
   // THE STORY. Each frame: act — which scene, boy/girl — their lines,
   // cap — the narrator's caption, title — the frame headline (motion graphics),
@@ -1785,8 +1826,8 @@ document.getElementById('openBtn').addEventListener('click', e => {
   document.body.classList.remove('locked');
   opened_ = true;
 
-  // try the full version from music.mp3 first; with no file, the music box
-  SONG.start(()=> MUSIC.start());
+  // your own tracks first; with no files there, our own pieces take over
+  SONGS.start().then(ok => { if (!ok) MUSIC.start(); });
   curtainFall();          // the sheet starts coming down
 
   // The swap happens dead centre in the window, once the sheet covers the
@@ -1967,27 +2008,118 @@ document.getElementById('shuffleBtn').addEventListener('click', ()=>{
 /* ============================================================
    MUSIC
 
-   The melody is not a file but a living music box: the chords go round and
-   the line on top is composed fresh every time. That is why it never ends —
-   once it starts it plays for as long as the page is open. There is nothing
-   to stop it with, and no reason to.
+   Nothing here is a recording. The player carries several short pieces of
+   its own, each with its own key, tempo and instrument colour, and plays
+   them one after another in a shuffled order that never runs out. One piece
+   resolves, the next one takes over, and after all of them have played the
+   order is shuffled again. That is why the music neither stops nor starts
+   repeating itself.
+
+   If you drop your own mp3 files next to index.html (CONFIG.musicFiles),
+   they take over instead and loop as a playlist.
    ============================================================ */
+const deck = document.getElementById('deck');
+
+/* the vinyl label and the strip under the deck always show what is on now */
+function setNowPlaying(title, sub){
+  document.getElementById('discTitle').textContent  = title;
+  document.getElementById('discArtist').textContent = sub || '';
+  const t = document.getElementById('npTitle');
+  if (t && t.textContent !== title){
+    t.textContent = title;
+    t.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],
+              {duration:520, easing:'cubic-bezier(.22,1,.36,1)'});
+  }
+  const list = document.getElementById('npList');
+  if (list) for (const el of list.children) el.classList.toggle('on', el.dataset.name === title);
+}
+function renderTrackList(names){
+  const list = document.getElementById('npList');
+  if (!list) return;
+  list.innerHTML = '';
+  for (const n of names){
+    const el = document.createElement('span');
+    el.dataset.name = n;
+    el.textContent = n;
+    list.appendChild(el);
+  }
+}
+
+const NOTE_STEPS = { C:0,'C#':1, D:2,'D#':3, E:4, F:5,'F#':6, G:7,'G#':8, A:9,'A#':10, B:11 };
+const hz = n => {
+  const m = /^([A-G]#?)(\d)$/.exec(n);
+  return 440 * Math.pow(2, (NOTE_STEPS[m[1]] - 9)/12 + (+m[2] - 4));
+};
+
+/* Five pieces. Each is a different key and a different colour, so the
+   rotation reads as a small album rather than one loop going round. */
+const PIECES = [
+  { name:'first light', voice:'bell', bpm:62, bars:16, rest:.14,
+    chords:[ { bass:'C3', notes:['C4','E4','G4'] },
+             { bass:'B2', notes:['B3','D4','G4'] },
+             { bass:'A2', notes:['A3','C4','E4'] },
+             { bass:'F2', notes:['A3','C4','F4'] } ],
+    scale:['C5','D5','E5','G5','A5','C6','D6','E6'] },
+
+  { name:'slow dance', voice:'keys', bpm:54, bars:14, rest:.2,
+    chords:[ { bass:'F2',  notes:['F3','A3','C4'] },
+             { bass:'D3',  notes:['F3','A3','D4'] },
+             { bass:'A#2', notes:['F3','A#3','D4'] },
+             { bass:'C3',  notes:['E3','G3','C4'] } ],
+    scale:['F4','G4','A4','C5','D5','F5','G5','A5'] },
+
+  { name:'the long walk home', voice:'pluck', bpm:72, bars:18, rest:.1,
+    chords:[ { bass:'A2', notes:['A3','C4','E4'] },
+             { bass:'F2', notes:['A3','C4','F4'] },
+             { bass:'C3', notes:['G3','C4','E4'] },
+             { bass:'G2', notes:['G3','B3','D4'] } ],
+    scale:['A4','C5','D5','E5','G5','A5','C6','D6'] },
+
+  { name:'three in the morning', voice:'glass', bpm:58, bars:14, rest:.26,
+    chords:[ { bass:'D3',  notes:['D4','F#4','A4'] },
+             { bass:'C#3', notes:['C#4','E4','A4'] },
+             { bass:'B2',  notes:['B3','D4','F#4'] },
+             { bass:'G2',  notes:['B3','D4','G4'] } ],
+    scale:['D5','E5','F#5','A5','B5','D6','E6','F#6'] },
+
+  { name:'you said yes', voice:'bell', bpm:68, bars:16, rest:.1,
+    chords:[ { bass:'G2', notes:['G3','B3','D4'] },
+             { bass:'E2', notes:['G3','B3','E4'] },
+             { bass:'C3', notes:['G3','C4','E4'] },
+             { bass:'D3', notes:['F#3','A3','D4'] } ],
+    scale:['G4','A4','B4','D5','E5','G5','A5','B5'] }
+];
+// note names are for reading; the engine wants hertz
+for (const P of PIECES){
+  for (const c of P.chords){ c.bassHz = hz(c.bass); c.hz = c.notes.map(hz); }
+  P.scaleHz = P.scale.map(hz);
+}
+
 const MUSIC = (() => {
   const Ctx = window.AudioContext || window.webkitAudioContext;
   let actx = null, master = null, voices = null, timer = null;
-  let started = false, nextTime = 0, barNo = 0, mi = 3;
+  let started = false, nextTime = 0, mi = 3;
+  let order = [], pos = 0, pieceBar = 0;
 
-  const BPM = 62, BEAT = 60/BPM, BAR = BEAT*4;
+  const P = () => PIECES[order[pos]];
 
-  // a warm loop: C - G/B - Am - F. It folds into itself, so the seam is inaudible.
-  const CHORDS = [
-    { bass:130.81, notes:[261.63, 329.63, 392.00] },
-    { bass:123.47, notes:[246.94, 293.66, 392.00] },
-    { bass:110.00, notes:[261.63, 329.63, 440.00] },
-    { bass: 87.31, notes:[261.63, 349.23, 440.00] }
-  ];
-  // pentatonic: whichever note you take, it cannot land wrong
-  const SCALE = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51];
+  // a fresh shuffle every lap, and never the same piece twice across the seam
+  function reshuffle(){
+    const last = order.length ? order[order.length-1] : -1;
+    do {
+      order = PIECES.map((_,i)=>i);
+      for (let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
+    } while (order.length > 1 && order[0] === last);
+    pos = 0;
+  }
+  function nextPiece(){
+    pos++;
+    if (pos >= order.length) reshuffle();
+    pieceBar = 0;
+    mi = Math.floor(P().scaleHz.length / 2);
+    announce();
+  }
+  function announce(){ if (!SONGS.on) setNowPlaying(P().name, CONFIG.song.artist); }
 
   function reverb(){
     const len = Math.floor(actx.sampleRate * 2.8);
@@ -1999,19 +2131,46 @@ const MUSIC = (() => {
     const c = actx.createConvolver(); c.buffer = buf; return c;
   }
 
-  // bell note: soft attack, long tail
-  function bell(f, t, gain, dur){
-    const o  = actx.createOscillator(), o2 = actx.createOscillator();
-    const g  = actx.createGain(),       g2 = actx.createGain();
-    o.type = 'sine';     o.frequency.value = f;
-    o2.type = 'triangle'; o2.frequency.value = f * 2.006;   // a slight detune is what gives the shimmer
-    g2.gain.value = .14;
+  /* One note, in the colour of the current piece. A bell rings long and
+     bright, keys are rounder and shorter, a pluck closes its filter as it
+     decays, glass is quiet and hangs in the air. */
+  function note(kind, f, t, gain, dur){
+    const g = actx.createGain();
     g.gain.setValueAtTime(.0001, t);
-    g.gain.exponentialRampToValueAtTime(gain, t + .014);
+    let out = g, attack = .014;
+    const oscs = [];
+    const add = (type, mul, level) => {
+      const o = actx.createOscillator();
+      o.type = type; o.frequency.value = f * mul;
+      const lv = actx.createGain(); lv.gain.value = level;
+      o.connect(lv); lv.connect(g); oscs.push(o);
+    };
+
+    if (kind === 'bell'){
+      add('sine', 1, 1); add('triangle', 2.006, .14);       // the detune is what shimmers
+    } else if (kind === 'keys'){
+      attack = .028;
+      add('triangle', 1, 1); add('sine', 1.003, .5); add('sine', 2, .08);
+      const lp = actx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 2300;
+      g.connect(lp); out = lp;
+    } else if (kind === 'pluck'){
+      attack = .005;
+      add('sawtooth', 1, .5); add('triangle', 1.004, .5);
+      const lp = actx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.setValueAtTime(2800, t);
+      lp.frequency.exponentialRampToValueAtTime(520, t + dur*.7);  // the string closing down
+      g.connect(lp); out = lp;
+    } else {                                                 // glass
+      attack = .05;
+      add('sine', 1, 1); add('sine', 3.01, .07); add('sine', 4.98, .03);
+    }
+
+    g.gain.exponentialRampToValueAtTime(gain, t + attack);
     g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g); o2.connect(g2); g2.connect(g); g.connect(voices);
-    o.start(t); o2.start(t);
-    o.stop(t + dur + .06); o2.stop(t + dur + .06);
+    out.connect(voices);
+    for (const o of oscs){ o.start(t); o.stop(t + dur + .08); }
   }
 
   // pad: holds the harmony under the melody
@@ -2038,31 +2197,38 @@ const MUSIC = (() => {
     o.start(t); o.stop(t + dur + .05);
   }
 
-  function playBar(i, t){
-    const ch = CHORDS[i % CHORDS.length];
-    bass(ch.bass, t, BAR*.95);
-    ch.notes.forEach((f,k)=> pad(f, t + k*.05, BAR*1.05, .034));
+  // one bar of the current piece; returns how long it lasts
+  function playBar(t){
+    const p = P(), BEAT = 60/p.bpm, BAR = BEAT*4;
+    const ch = p.chords[pieceBar % p.chords.length];
+    const S = p.scaleHz;
+
+    bass(ch.bassHz, t, BAR*.95);
+    ch.hz.forEach((f,k)=> pad(f, t + k*.05, BAR*1.05, .034));
 
     // the melody wanders near its previous note, which makes a line rather than beeps
     const rhythm = pick([[0,1,2,3],[0,1.5,2.5,3.5],[0,.75,1.5,2.5,3.25],[0,1,1.75,2.75]]);
+    const dur = p.voice === 'pluck' ? [.8,1.6] : p.voice === 'glass' ? [2.8,4.4] : [1.7,2.9];
     for (const b of rhythm){
-      if (Math.random() < .14) continue;                       // rests, so the line can breathe
-      mi = Math.max(0, Math.min(SCALE.length-1, mi + Math.round(rnd(-1.7,1.7))));
-      bell(SCALE[mi], t + b*BEAT, rnd(.09,.15), rnd(1.9,3));
-      if (Math.random() < .16)                                  // an occasional counter-voice a fifth above
-        bell(SCALE[Math.min(SCALE.length-1, mi+2)], t + b*BEAT + .1, .05, 1.7);
+      if (Math.random() < p.rest) continue;                    // rests, so the line can breathe
+      mi = Math.max(0, Math.min(S.length-1, mi + Math.round(rnd(-1.7,1.7))));
+      note(p.voice, S[mi], t + b*BEAT, rnd(.09,.15), rnd(dur[0],dur[1]));
+      if (Math.random() < .16)                                 // an occasional counter-voice a fifth above
+        note(p.voice, S[Math.min(S.length-1, mi+2)], t + b*BEAT + .1, .05, dur[0]);
     }
-    if (i % 8 === 7) bell(SCALE[Math.min(SCALE.length-1, mi+3)], t + BAR*.75, .07, 3.2);
+    // the last bar of a piece resolves high, so the handover sounds intended
+    if (pieceBar === p.bars - 1) note(p.voice, S[S.length-2], t + BAR*.6, .08, 3.4);
+
+    pieceBar++;
+    if (pieceBar >= p.bars) nextPiece();
+    return BAR;
   }
 
   function tick(){
     if (!actx) return;
     // the tab may have been backgrounded and the timer frozen: just carry on from "now"
     if (nextTime < actx.currentTime) nextTime = actx.currentTime + .12;
-    while (nextTime < actx.currentTime + 1.8){
-      playBar(barNo++, nextTime);
-      nextTime += BAR;
-    }
+    while (nextTime < actx.currentTime + 1.8) nextTime += playBar(nextTime);
   }
 
   function resume(){ if (actx && actx.state === 'suspended') actx.resume(); }
@@ -2070,6 +2236,8 @@ const MUSIC = (() => {
   function start(){
     if (started || !Ctx) return;
     started = true;
+    reshuffle();
+    mi = Math.floor(P().scaleHz.length / 2);
     actx = new Ctx();
     master = actx.createGain();
     master.gain.setValueAtTime(.0001, actx.currentTime);
@@ -2084,9 +2252,10 @@ const MUSIC = (() => {
     tick();
     timer = setInterval(tick, 260);
     deck.classList.add('playing');
+    announce();
   }
 
-  // if she starts our song on Spotify, duck the music box but never stop it
+  // if she starts our song on Spotify, duck our own sound but never stop it
   function level(v, sec=1.6){
     if (!master) return;
     master.gain.cancelScheduledValues(actx.currentTime);
@@ -2097,35 +2266,126 @@ const MUSIC = (() => {
   document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) resume(); });
   addEventListener('pointerdown', ()=>{ resume(); }, {passive:true});
 
-  return { start, resume, level, get on(){ return started; } };
+  return { start, resume, level, names: PIECES.map(p=>p.name), get on(){ return started; } };
 })();
 
-const deck = document.getElementById('deck');
+/* Your own songs (CONFIG.musicFiles). Every file listed is probed once; the
+   ones that are actually there become a playlist that plays through and starts
+   over, for as long as the page is open. Two audio elements take turns so the
+   next track is already buffered and the seam is a crossfade rather than a gap.
+   If no file answers, the pieces above play instead. */
+const SONGS = (() => {
+  // read at start time, not at parse time, so the list can still be edited
+  const wanted = () => (CONFIG.musicFiles || []).map(t => typeof t === 'string' ? { file:t } : t);
+  const els = [new Audio(), new Audio()];
+  els.forEach(e => { e.preload = 'auto'; e.volume = 0; });
+  let queue = [], at = 0, cur = 0, playing = false, vol = .85, fadeTimer = null;
 
-/* A local mp3 with the full version of the song (CONFIG.musicFile). If the
-   file is there we loop it; if not, we quietly fall back to the music box. */
-const SONG = (() => {
-  const el = new Audio();
-  el.loop = true;
-  el.preload = 'auto';
-  el.src = CONFIG.musicFile;
-  let playing = false;
+  const titleOf = t => t.title || t.file.replace(/^.*\//,'').replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ');
 
-  function start(onfail){
-    if (playing) return;
-    el.volume = 0;
-    el.play().then(() => {
-      playing = true;
-      const t0 = performance.now();           // fades in, same as the music box
-      const fade = setInterval(() => {
-        const k = Math.min(1, (performance.now() - t0) / 4000);
-        el.volume = .85 * k;
-        if (k >= 1) clearInterval(fade);
-      }, 120);
-      deck.classList.add('playing');
-    }).catch(() => { if (onfail) onfail(); });
+  // a file that answers with playable audio stays; anything else is dropped
+  const probe = t => new Promise(res => {
+    const a = new Audio();
+    const done = ok => { a.src = ''; res(ok ? t : null); };
+    a.addEventListener('canplay', ()=>done(true), {once:true});
+    a.addEventListener('loadedmetadata', ()=>done(true), {once:true});
+    a.addEventListener('error', ()=>done(false), {once:true});
+    a.preload = 'auto'; a.src = t.file;
+    setTimeout(()=>done(false), 4000);
+  });
+
+  async function find(list){
+    if (!list.length) return [];
+    const found = (await Promise.all(list.map(probe))).filter(Boolean);
+    for (let i=found.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [found[i],found[j]]=[found[j],found[i]]; }
+    return found;
   }
-  function level(v){ if (playing) el.volume = v; }
+
+  // which track an element is loaded with is written on the element itself,
+  // so the player can always tell whether it is holding the right one
+  function arm(el, i){ el.src = queue[i].file; el.dataset.track = i; el.load(); }
+  function armNext(){
+    const el = els[1-cur];
+    if (el === els[cur]) return;                             // never load into the live one
+    const i = (at + 1) % queue.length;
+    if (el.dataset.track !== String(i)) arm(el, i);
+  }
+
+  function playCurrent(fade){
+    const el = els[cur];
+    if (el.dataset.track !== String(at)) arm(el, at);        // self-correcting: always the right track
+    el.volume = fade ? 0 : vol;
+    el.play().catch(()=>{});
+    setNowPlaying(titleOf(queue[at]), CONFIG.song.artist);
+    if (fade) ramp(el, vol, 2200);
+  }
+
+  function ramp(el, to, ms){
+    const from = el.volume, t0 = performance.now();
+    clearInterval(fadeTimer);
+    fadeTimer = setInterval(()=>{
+      const k = Math.min(1, (performance.now()-t0)/ms);
+      el.volume = Math.max(0, Math.min(1, from + (to-from)*k));
+      if (k >= 1) clearInterval(fadeTimer);
+    }, 60);
+  }
+
+  /* Park the element that was just handed over: fade it under the new one,
+     stop it, and preload the following track into it. If in the meantime it
+     has become the live element again, back off and leave it alone — an
+     abandoned fade must never pause the track that is currently playing. */
+  function park(el){
+    const t = setInterval(()=>{
+      if (el === els[cur]){ clearInterval(t); return; }
+      el.volume = Math.max(0, el.volume - .06);
+      if (el.volume > .01 && !el.paused) return;
+      clearInterval(t);
+      el.pause();
+      armNext();
+    }, 90);
+  }
+
+  // hand over near the end of a track: the outgoing one fades under the incoming
+  function watch(){
+    const el = els[cur];
+    if (!playing || !el.duration || !isFinite(el.duration)) return;
+    if (el.currentTime < .5) return;                         // just started, nothing to hand over
+    if (el.duration - el.currentTime > 1.6) return;
+    const outgoing = el;
+    cur = 1 - cur; at = (at + 1) % queue.length;
+    playCurrent(true);
+    park(outgoing);
+  }
+
+  async function start(){
+    const list = wanted();
+    if (playing || !list.length) return false;
+    queue = await find(list);
+    if (!queue.length) return false;
+    playing = true;
+    arm(els[0], 0);
+    playCurrent(true);
+    // autoplay can still be refused for a media element. Make sure sound is
+    // really coming out before letting the generated pieces stand down —
+    // silence is the one outcome this page must never produce.
+    await new Promise(r => setTimeout(r, 500));
+    if (els[cur].paused){ playing = false; els.forEach(e => e.pause()); return false; }
+    armNext();
+    renderTrackList(queue.map(titleOf));
+    // a track can also simply end before the watcher catches it. Only the
+    // element that is currently the live one may advance the queue.
+    els.forEach(e => e.addEventListener('ended', ()=>{
+      if (!playing || e !== els[cur]) return;
+      cur = 1 - cur;
+      at = (at + 1) % queue.length;
+      playCurrent(false);
+      park(e);
+    }));
+    setInterval(watch, 400);
+    deck.classList.add('playing');
+    return true;
+  }
+  function level(v){ vol = v; if (playing) els[cur].volume = v; }
   return { start, level, get on(){ return playing; } };
 })();
 
@@ -2133,12 +2393,12 @@ const SONG = (() => {
   const {type,id} = CONFIG.spotify;
   document.getElementById('spotify').src = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`;
   document.getElementById('spotifyLink').href = `https://open.spotify.com/${type}/${id}`;
-  document.getElementById('discTitle').textContent  = CONFIG.song.title;
-  document.getElementById('discArtist').textContent = CONFIG.song.artist;
+  setNowPlaying(CONFIG.song.title, CONFIG.song.artist);
+  renderTrackList(MUSIC.names);
 
   // the record never stops: a tap only lifts the needle and sets it back down
   const nudge = ()=>{
-    if (!SONG.on){ MUSIC.start(); MUSIC.resume(); }
+    if (!SONGS.on){ MUSIC.start(); MUSIC.resume(); }
     deck.classList.add('playing');
     deck.animate([{transform:'scale(1)'},{transform:'scale(.985)'},{transform:'scale(1)'}],
                  {duration:340, easing:'ease-out'});
@@ -2148,7 +2408,7 @@ const SONG = (() => {
     if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); nudge(); }
   });
   // she touched the Spotify player: push our own sound into the background
-  document.querySelector('.sp-card').addEventListener('pointerdown', ()=>{ MUSIC.level(.05); SONG.level(.05); }, true);
+  document.querySelector('.sp-card').addEventListener('pointerdown', ()=>{ MUSIC.level(.05); SONGS.level(.05); }, true);
 })();
 
 /* ============================================================
