@@ -28,10 +28,16 @@ label on the disc names the record; the strip under the deck names whatever is
 actually audible.
 
 Above the turntable is **her mixtape** — the songs she keeps playing, written out
-on a cassette whose reels turn, each one linking back to where it came from.
+on a cassette whose reels turn, each one linking back to where it came from. And
+along the bottom of the tape the two of them go for a walk: the drawn couple
+strolls from song to song and back, the note they are passing swells, its row in
+the tracklist lights up, and the title rides in a little bubble over their heads.
+Music notes and hearts drift up as they go. They walk only while the tape is on
+screen, and with `prefers-reduced-motion` they simply stand together.
 
-Everything leads itself from there. Solve the puzzle and the page praises her
-and carries her down to the turntable with your song. Below that, the **story
+Everything leads itself from there — at her own pace: after the puzzle nothing
+yanks the page anywhere, she sits with the photo as long as she likes and the
+hint points the way on. Below that, the **story
 plays out frame by frame**: how she followed first, how he froze for nine days,
 how he finally worked up the nerve, the first date, and how ordinary days became
 shared ones. At the end he says: "there's something I want to tell you" —

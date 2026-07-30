@@ -357,6 +357,36 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
   animation:eq 1.1s ease-in-out infinite;animation-delay:var(--d,0s)}
 .mix-note{margin:18px 4px 0;font-size:.84rem;color:var(--ink-soft);opacity:.9}
 
+/* ---- the walk: the two of them stroll along the tracklist ---- */
+.walkway{position:relative;height:108px;margin:2px 4px 14px}
+.walkpath{position:absolute;left:4%;right:4%;bottom:9px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#eccdd9 14%,#eccdd9 86%,transparent)}
+.stone{position:absolute;bottom:1px;transform:translateX(-50%);font-size:13px;line-height:1;
+  color:#e2b3c4;transition:transform .45s cubic-bezier(.34,1.6,.64,1),color .45s}
+.stone.on{transform:translateX(-50%) scale(1.65);color:var(--rose-deep)}
+.walkers{position:absolute;bottom:12px;transform:translateX(-50%);pointer-events:none}
+.walkers .duo{display:flex;align-items:flex-end;gap:3px;transition:transform .5s ease}
+.walkers img{height:76px;width:auto;transform-origin:50% 100%;
+  animation:stroll .56s ease-in-out infinite alternate;
+  filter:drop-shadow(0 5px 9px rgba(140,60,90,.25))}
+.walkers img.g{animation-delay:.28s;height:71px}
+@keyframes stroll{from{transform:rotate(-3.5deg)}to{transform:rotate(3.5deg) translateY(-2.5px)}}
+.walkers.rev .duo{transform:scaleX(-1)}     /* they turn around at the ends of the path */
+.walk-say{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  white-space:nowrap;font-size:.74rem;letter-spacing:.05em;color:var(--rose-deep);
+  background:rgba(255,255,255,.93);border:1px solid #f3dce5;border-radius:999px;padding:4px 12px;
+  box-shadow:0 8px 18px -12px rgba(160,60,100,.8)}
+.walk-say.pop{animation:saypop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes saypop{from{transform:translateX(-50%) scale(.7)}to{transform:translateX(-50%) scale(1)}}
+.wnote{position:absolute;bottom:88px;font-size:15px;color:var(--rose-deep);opacity:0;
+  animation:wnote 2.6s ease-out forwards;pointer-events:none}
+@keyframes wnote{0%{opacity:0;transform:translate(0,6px) rotate(0)}18%{opacity:.9}
+  100%{opacity:0;transform:translate(16px,-46px) rotate(16deg)}}
+/* the row they are passing lights up */
+.mixlist a.walk-on{background:rgba(255,255,255,.95)}
+.mixlist a.walk-on .bars{opacity:1}
+.mixlist a.walk-on .n{color:var(--rose-deep)}
+
 /* ============ THE STORY, FRAME BY FRAME ============ */
 #storyScene .wrap{max-width:1180px}
 .stage-frame{position:relative;max-width:1120px;margin:0 auto;border-radius:30px;padding:12px;
@@ -628,6 +658,9 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   .turntable{gap:16px}
   .deck{width:min(56vw,210px)}
   .tape-card{padding:18px 14px 16px;border-radius:20px}
+  .walkway{height:92px}
+  .walkers img{height:62px}
+  .walkers img.g{height:58px}
   .mixlist a{gap:10px;padding:11px 6px}
   .arm-hint{font-size:.54rem}
   .nowplay{font-size:.84rem;padding:8px 13px}
@@ -725,6 +758,9 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
         </g>
         <path d="M96,155 h128" stroke="#eccdd9" stroke-width="4" stroke-linecap="round"/>
       </svg>
+
+      <!-- the two of them, strolling from song to song -->
+      <div class="walkway" id="walkway" aria-hidden="true"></div>
 
       <ol class="mixlist" id="mixList"></ol>
       <p class="mix-note" id="mixNote">Tap any of them — they open where they came from.</p>
@@ -2067,10 +2103,8 @@ function check(){
   const hint = document.getElementById('scrollHint');
   if (hint){ hint.style.opacity = '1'; hint.querySelector('span').textContent = CONFIG.puzzleNext; }
 
-  // lead from here: she has just solved it, no need to hunt for where to scroll
-  setTimeout(()=>{
-    document.getElementById('musicScene').scrollIntoView({behavior:'smooth', block:'start'});
-  }, 2600);
+  // no auto-scroll: she has just solved it — let her sit with the photo
+  // for as long as she likes; the hint below points the way on.
 }
 
 async function startPuzzle(){
@@ -2524,6 +2558,94 @@ const RECORD = (() => {
     li.appendChild(a);
     ol.appendChild(li);
   });
+})();
+
+/* THE WALK. The two of them stroll along the bottom of the mixtape, from
+   song to song and back again. Whichever note they are passing swells, its
+   row in the tracklist lights up, and the title rides in a little bubble
+   over their heads — the two of them walking through her music together. */
+(function walkStory(){
+  const strip   = document.getElementById('walkway');
+  const boyImg  = document.querySelector('#boy img');
+  const girlImg = document.querySelector('#girl img');
+  if (!strip || !boyImg || !girlImg || !CONFIG.herSongs.length) return;
+
+  const n = CONFIG.herSongs.length;
+  const L = 9, R = 91;                          // ends of the path, in %
+  const stoneAt = i => n === 1 ? 50 : L + (R - L) * i / (n - 1);
+
+  let html = '<div class="walkpath"></div>';
+  for (let i = 0; i < n; i++)
+    html += `<span class="stone" style="left:${stoneAt(i).toFixed(1)}%">♪</span>`;
+  html += `<div class="walkers" id="walkers">
+             <div class="walk-say" id="walkSay"></div>
+             <div class="duo">
+               <img class="b" src="${boyImg.src}" alt="">
+               <img class="g" src="${girlImg.src}" alt="">
+             </div>
+           </div>`;
+  strip.innerHTML = html;
+
+  const walkers = document.getElementById('walkers');
+  const say     = document.getElementById('walkSay');
+  const stones  = [...strip.querySelectorAll('.stone')];
+  const rows    = [...document.querySelectorAll('#mixList a')];
+
+  let pos = L, dir = 1, cur = -1, running = false, last = 0, noteDue = 0;
+
+  function setSong(i){
+    if (i === cur) return;
+    cur = i;
+    stones.forEach((el,k)=>el.classList.toggle('on', k === i));
+    rows.forEach((el,k)=>el.classList.toggle('walk-on', k === i));
+    say.textContent = '♪ ' + CONFIG.herSongs[i].title;
+    say.classList.remove('pop'); void say.offsetWidth; say.classList.add('pop');
+  }
+
+  function dropNote(now){
+    noteDue = now + rnd(1300, 2400);
+    const el = document.createElement('span');
+    el.className = 'wnote';
+    el.textContent = pick(['♪','♫','💗']);
+    el.style.left = `calc(${pos.toFixed(1)}% + ${rnd(-18,26).toFixed(0)}px)`;
+    strip.appendChild(el);
+    setTimeout(()=>el.remove(), 2700);
+  }
+
+  function frame(now){
+    if (!running) return;
+    const dt = Math.min((now - last)/1000 || 0, .05);
+    last = now;
+    pos += dir * dt * 3.1;                      // a full stroll takes about half a minute
+    if (pos >= R){ pos = R; dir = -1; }
+    if (pos <= L){ pos = L; dir = 1; }
+    walkers.style.left = pos.toFixed(2) + '%';
+    walkers.classList.toggle('rev', dir < 0);
+    let best = 0, bd = 1e9;
+    for (let i = 0; i < n; i++){
+      const d = Math.abs(stoneAt(i) - pos);
+      if (d < bd){ bd = d; best = i; }
+    }
+    setSong(best);
+    if (now >= noteDue) dropNote(now);
+    requestAnimationFrame(frame);
+  }
+
+  walkers.style.left = pos + '%';
+  setSong(0);
+  if (CALM){ walkers.style.left = '50%'; return; }   // they stand together, first song lit
+
+  // they only walk while the tape is on screen
+  new IntersectionObserver(entries => {
+    for (const e of entries){
+      if (e.isIntersecting && !running){
+        running = true; last = performance.now(); noteDue = last + 800;
+        requestAnimationFrame(frame);
+      } else if (!e.isIntersecting){
+        running = false;
+      }
+    }
+  }, {threshold:.15}).observe(strip);
 })();
 
 (function musicUI(){
