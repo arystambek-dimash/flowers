@@ -12,28 +12,21 @@ scroll, and butterflies and bees flying above them. From then on flowers only
 fall in the rare celebratory seconds — when the puzzle is solved, when the heart
 is broken, when she says yes.
 
-Music starts with that very first tap and never stops again. Nothing there is a
-recording: the page carries five short pieces of its own — *first light*, *slow
-dance*, *the long walk home*, *three in the morning*, *you said yes* — each in a
-different key, tempo and instrument colour. They play one after another in a
-shuffled order, and when all five have played the order is shuffled again, so
-the music neither runs out nor starts repeating itself.
+The only sound on the page is **the record**. On the turntable sits a real
+disc, and the tonearm is a real handle: take hold of it, swing it over, and the
+needle drops. Her song plays in full — no service, no thirty-second preview, no
+one asking her to log in. Lift the arm back onto its cradle and the room goes
+quiet again; there is no background melody underneath.
 
-And then there is **the record**. On the turntable sits a real disc, and the
-tonearm is a real handle: take hold of it, swing it over, and the needle drops.
-Her song plays in full — no service, no thirty-second preview, no one asking her
-to log in. While it plays, the five pieces duck to silence underneath instead of
-stopping, so lifting the arm back onto its cradle brings them straight back. The
-label on the disc names the record; the strip under the deck names whatever is
-actually audible.
-
-Above the turntable is **her mixtape** — the songs she keeps playing, written out
-on a cassette whose reels turn, each one linking back to where it came from. And
-along the bottom of the tape the two of them go for a walk: the drawn couple
-strolls from song to song and back, the note they are passing swells, its row in
-the tracklist lights up, and the title rides in a little bubble over their heads.
-Music notes and hearts drift up as they go. They walk only while the tape is on
-screen, and with `prefers-reduced-motion` they simply stand together.
+Above the turntable is **our little playlist ♡** — the songs she keeps playing,
+dealt out as a wall of bold song cards in the style of shared music embeds: each
+in its own colour, slightly tilted, floating out of step with its neighbours,
+with a drawn flower for cover art, a Preview badge, and a link out to where the
+song lives. And under the cards the two of them go for a walk: the drawn couple
+strolls from song to song and back, the note they are passing swells, its card
+sits up, and the title rides in a little bubble over their heads. Music notes
+and hearts drift up as they go. They walk only while the playlist is on screen,
+and with `prefers-reduced-motion` they simply stand together.
 
 Everything leads itself from there — at her own pace: after the puzzle nothing
 yanks the page anywhere, she sits with the photo as long as she likes and the
@@ -74,7 +67,7 @@ it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
 `girl_recraft.svg`; the transparent versions used on stage are `boy_char.png`
 and `girl_char.png`.
 
-## The record and her mixtape
+## The record and her playlist
 
 There is no streaming embed on the page any more. Every service caps an
 un-logged-in visitor at a thirty-second preview and then asks her to sign up,
@@ -93,17 +86,17 @@ record: {
 Drop the mp3 in `music/`, name it here, and the tonearm plays it. Swapping the
 song means swapping that file and those two lines.
 
-Her favourite songs are just as plain — a title and a link each:
+Her favourite songs are just as plain — a title, a colour and a link each:
 
 ```js
 herSongs: [
-  { title: '3005', url: 'https://music.apple.com/…' },
+  { title: '3005', color:'#2f6fd6', url: 'https://music.apple.com/…' },
   …
 ],
 ```
 
-They are rendered as the track list on the cassette. Add an `artist` to any of
-them and it is printed under the title.
+They are rendered as the wall of song cards. Add an `artist` to any of them and
+it replaces the host name printed on the card.
 
 ## How to open it
 
@@ -124,8 +117,7 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
 | What | How |
 |---|---|
 | **The record** | `CONFIG.record` — the mp3 the tonearm plays, its title and artist, whether it loops, and the nudge printed on the deck. |
-| **Her songs** | `CONFIG.herSongs` — the track list on the cassette: a title and a link each, plus an optional `artist`. The heading and the line under it are `CONFIG.herSongsTitle`, `CONFIG.herSongsSub` and `CONFIG.tapeLabel`. |
-| **Our own pieces** | `CONFIG.song` — the line printed under the title on the vinyl label, and the fallback name in the strip. |
+| **Her songs** | `CONFIG.herSongs` — the song cards: a title, a card colour and a link each, plus an optional `artist`. The heading and the line under it are `CONFIG.herSongsTitle` and `CONFIG.herSongsSub`. |
 | **Puzzle photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
 | **Story** | `CONFIG.story` — an array of frames. Each has: `act` — which scene (1 he is alone, 2 she followed, 3 he walks over, 4 the date, 5–7 together), `boy` and `girl` — their lines, `cap` — the narrator's caption, `title` — the frame headline, `wait` — how long to hold the frame in milliseconds. Plus: `walk` — he is walking, `freeze` — he stands there twitching, `days` — run the day counter, `show` — what to reveal (`notif`, `think`, `sweat`, `days`), `last` — the final frame. |
 | **Puzzle praise** | `CONFIG.puzzleDone` and `CONFIG.puzzleNext`. |
@@ -169,17 +161,10 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
   the one point that does not move as the arm turns, and a drag is judged against
   where it began rather than the last frame — a slow drag moves a fraction of a
   degree per event and would otherwise read as a tap.
-- **Music.** A synthesiser of its own on Web Audio, playing five pieces that take
-  turns. Each piece has its own key, chord progression, tempo and voice — a bell
-  that rings long and bright, rounder keys, a pluck whose filter closes as it
-  decays, and glass that hangs quietly in the air. Notes come from a pentatonic
-  scale and the melody walks near its previous note, which makes a line rather
-  than a set of beeps; each piece resolves on a high note in its last bar so the
-  handover to the next one sounds intended. Notes are scheduled a second and a
-  half ahead, so the rhythm stays even; if the tab is backgrounded and the timer
-  frozen, the loop simply carries on from "now". Put the needle down and these
-  pieces duck to silence rather than stopping, so the moment the arm goes back to
-  its cradle they are already there.
+- **Sound.** The record is the page's only sound: silence until the needle is
+  down, the full song while it is, silence again when the arm is lifted. The
+  strip under the deck says which it is — "the record is waiting…" or the song —
+  and its little equaliser bars move only while something is actually audible.
 - **The story** is not a chat log but a little play. A frame says only who stands
   where and what is shown; the moves between positions are done by CSS, which is
   why a scene change looks like movement rather than slides being clicked through.
