@@ -12,14 +12,23 @@ scroll, and butterflies and bees flying above them. From then on flowers only
 fall in the rare celebratory seconds — when the puzzle is solved, when the heart
 is broken, when she says yes.
 
-Music starts with that very first tap and never stops again. Nothing here is a
+Music starts with that very first tap and never stops again. Nothing there is a
 recording: the page carries five short pieces of its own — *first light*, *slow
 dance*, *the long walk home*, *three in the morning*, *you said yes* — each in a
 different key, tempo and instrument colour. They play one after another in a
 shuffled order, and when all five have played the order is shuffled again, so
-the music neither runs out nor starts repeating itself. What is on right now is
-written on the vinyl label and on the strip under the turntable. Drop your own
-mp3 files next to the page and they take over as a playlist instead.
+the music neither runs out nor starts repeating itself.
+
+And then there is **the record**. On the turntable sits a real disc, and the
+tonearm is a real handle: take hold of it, swing it over, and the needle drops.
+Her song plays in full — no service, no thirty-second preview, no one asking her
+to log in. While it plays, the five pieces duck to silence underneath instead of
+stopping, so lifting the arm back onto its cradle brings them straight back. The
+label on the disc names the record; the strip under the deck names whatever is
+actually audible.
+
+Above the turntable is **her mixtape** — the songs she keeps playing, written out
+on a cassette whose reels turn, each one linking back to where it came from.
 
 Everything leads itself from there. Solve the puzzle and the page praises her
 and carries her down to the turntable with your song. Below that, the **story
@@ -59,29 +68,36 @@ it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
 `girl_recraft.svg`; the transparent versions used on stage are `boy_char.png`
 and `girl_char.png`.
 
-## Your own songs
+## The record and her mixtape
 
-Without a Premium login in the browser, the Spotify embed plays only 30 seconds
-— that is Spotify's own limit and nothing on the page can work around it. So the
-page plays full files of its own instead: drop mp3s next to `index.html` and
-list them in `CONFIG.musicFiles`:
+There is no streaming embed on the page any more. Every service caps an
+un-logged-in visitor at a thirty-second preview and then asks her to sign up,
+which is the last thing this page should do. So the song is simply a file:
 
 ```js
-musicFiles: ['music.mp3', 'music2.mp3', 'music3.mp3', 'music4.mp3'],
-// or, to give a track a nicer name than its filename:
-musicFiles: [{ file:'music.mp3', title:'the one from the car' }, 'music2.mp3'],
+record: {
+  file:   'music/perfect.mp3',
+  title:  'Perfect',
+  artist: 'Ed Sheeran',
+  loop:   true,            // false = the arm lifts by itself at the end
+  hint:   'move the arm onto the record'
+},
 ```
 
-Every file listed is probed once; whichever ones are actually there become a
-playlist that is shuffled, played through, and started over again, for as long
-as the page is open. The seam between tracks is a crossfade, not a gap — two
-audio elements take turns so the next track is already buffered. Files that are
-not there are dropped silently, and if none of them answer (or the browser
-refuses to autoplay them) the five built-in pieces play instead. Silence is the
-one outcome the page will not produce.
+Drop the mp3 in `music/`, name it here, and the tonearm plays it. Swapping the
+song means swapping that file and those two lines.
 
-(If she is logged into Spotify Premium in that browser, the full track plays
-right in the embed too.)
+Her favourite songs are just as plain — a title and a link each:
+
+```js
+herSongs: [
+  { title: '3005', url: 'https://music.apple.com/…' },
+  …
+],
+```
+
+They are rendered as the track list on the cassette. Add an `artist` to any of
+them and it is printed under the title.
 
 ## How to open it
 
@@ -101,9 +117,9 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
 
 | What | How |
 |---|---|
-| **Song** | `CONFIG.spotify` — paste the id of a track or a playlist. It comes from the link: `open.spotify.com/track/`**`0tgVpDi06...`**. For a playlist set `type: 'playlist'`. |
-| **Your songs** | `CONFIG.musicFiles` — a list of mp3 files next to `index.html`. The ones that exist become a shuffled playlist that loops forever. Leave it empty and the five built-in pieces play instead. |
-| **Record label text** | `CONFIG.song` — the fallback title and the line printed under it on the vinyl label. |
+| **The record** | `CONFIG.record` — the mp3 the tonearm plays, its title and artist, whether it loops, and the nudge printed on the deck. |
+| **Her songs** | `CONFIG.herSongs` — the track list on the cassette: a title and a link each, plus an optional `artist`. The heading and the line under it are `CONFIG.herSongsTitle`, `CONFIG.herSongsSub` and `CONFIG.tapeLabel`. |
+| **Our own pieces** | `CONFIG.song` — the line printed under the title on the vinyl label, and the fallback name in the strip. |
 | **Puzzle photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
 | **Story** | `CONFIG.story` — an array of frames. Each has: `act` — which scene (1 he is alone, 2 she followed, 3 he walks over, 4 the date, 5–7 together), `boy` and `girl` — their lines, `cap` — the narrator's caption, `title` — the frame headline, `wait` — how long to hold the frame in milliseconds. Plus: `walk` — he is walking, `freeze` — he stands there twitching, `days` — run the day counter, `show` — what to reveal (`notif`, `think`, `sweat`, `days`), `last` — the final frame. |
 | **Puzzle praise** | `CONFIG.puzzleDone` and `CONFIG.puzzleNext`. |
@@ -140,6 +156,13 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
   has three nested layers of movement — the crossing of the screen, the up-and-down
   bobbing, and the tilt — which is what makes the flight look alive instead of a
   ride along a straight line. The wings flap separately.
+- **The tonearm.** It is the only control on the deck, and it behaves like the
+  object it is: grab it and it follows your finger, let go past the middle of its
+  swing and the needle sets down, let go short of it and it returns to its cradle.
+  A plain tap flips it either way. The angle is measured from the pivot, which is
+  the one point that does not move as the arm turns, and a drag is judged against
+  where it began rather than the last frame — a slow drag moves a fraction of a
+  degree per event and would otherwise read as a tap.
 - **Music.** A synthesiser of its own on Web Audio, playing five pieces that take
   turns. Each piece has its own key, chord progression, tempo and voice — a bell
   that rings long and bright, rounder keys, a pluck whose filter closes as it
@@ -148,8 +171,9 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
   than a set of beeps; each piece resolves on a high note in its last bar so the
   handover to the next one sounds intended. Notes are scheduled a second and a
   half ahead, so the rhythm stays even; if the tab is backgrounded and the timer
-  frozen, the loop simply carries on from "now". Start your own song on Spotify
-  and our sound steps back but never switches off.
+  frozen, the loop simply carries on from "now". Put the needle down and these
+  pieces duck to silence rather than stopping, so the moment the arm goes back to
+  its cradle they are already there.
 - **The story** is not a chat log but a little play. A frame says only who stands
   where and what is shown; the moves between positions are done by CSS, which is
   why a scene change looks like movement rather than slides being clicked through.
