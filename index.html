@@ -309,56 +309,63 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
   font-size:.92rem;color:var(--ink);letter-spacing:.02em}
 .np-eq{display:flex;align-items:flex-end;gap:2.5px;height:14px;flex:0 0 auto}
 .np-eq i{width:3px;height:40%;border-radius:2px;background:var(--rose-deep);
-  animation:eq .95s ease-in-out infinite}
+  animation:eq .95s ease-in-out infinite;animation-play-state:paused}
+.deck-col:has(.deck.playing) .np-eq i{animation-play-state:running}
 .np-eq i:nth-child(2){animation-delay:.16s}
 .np-eq i:nth-child(3){animation-delay:.34s}
 .np-eq i:nth-child(4){animation-delay:.5s}
 @keyframes eq{0%,100%{height:28%}50%{height:100%}}
 .np-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* the whole little album, so it is clear there is more than one */
-.np-list{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
-  max-width:min(80vw,360px)}
-.np-list span{font-size:.72rem;letter-spacing:.04em;padding:4px 10px;border-radius:999px;
-  color:var(--ink-soft);background:rgba(255,255,255,.7);border:1px solid #f3e2e8;
-  transition:color .5s ease,background .5s ease,border-color .5s ease}
-.np-list span.on{color:#fff;border-color:transparent;
-  background:linear-gradient(135deg,#f2a3b8,var(--rose-deep))}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ---- her mixtape ---- */
-.tape-card{max-width:640px;margin:0 auto;padding:26px 24px 22px;border-radius:26px;
-  background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(255,244,247,.92));
-  border:1px solid #f2dbe4;box-shadow:var(--shadow)}
-.cassette{display:block;width:min(78%,300px);height:auto;margin:0 auto 22px;
-  filter:drop-shadow(0 14px 26px rgba(140,40,70,.28))}
-/* the reels turn slowly, as if the tape were running */
-.reel{transform-box:fill-box;transform-origin:50% 50%;
-  animation:spin var(--rs,5s) linear infinite}
-.tape-title{letter-spacing:.06em}
+/* ---- her little playlist: bold cards, like shared song embeds ---- */
+.playlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 22px;
+  max-width:760px;margin:0 auto;padding:4px 2px}
+.songcard{position:relative;display:flex;align-items:center;gap:14px;
+  padding:14px 16px;border-radius:16px;text-decoration:none;color:#fff;
+  background:var(--c,#3a6fd8);
+  transform:rotate(var(--tilt,0deg)) translateY(calc(var(--dy,0px) + var(--float,0px)));
+  box-shadow:0 22px 40px -18px var(--cs,rgba(40,70,140,.55)), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform .35s cubic-bezier(.34,1.4,.64,1),box-shadow .35s ease}
+.songcard:hover{transform:rotate(0deg) translateY(calc(var(--dy,0px) - 5px)) scale(1.025);
+  box-shadow:0 30px 50px -18px var(--cs,rgba(40,70,140,.65)), inset 0 1px 0 rgba(255,255,255,.2)}
+/* the pair walking past a card makes it sit up */
+.songcard.walk-on{transform:rotate(0deg) translateY(calc(var(--dy,0px) - 4px)) scale(1.03);
+  box-shadow:0 30px 52px -16px var(--cs,rgba(40,70,140,.7)), inset 0 1px 0 rgba(255,255,255,.24)}
+/* each card floats gently, out of step with its neighbours; the float is a
+   registered length so it rides inside transform and never shifts layout */
+@property --float{syntax:'<length>';initial-value:0px;inherits:false}
+@keyframes cardfloat{0%,100%{--float:0px}50%{--float:-6px}}
+.songcard{animation:cardfloat var(--fd,7s) ease-in-out infinite;animation-delay:var(--fdl,0s)}
 
-.mixlist{list-style:none;margin:0;padding:0;text-align:left}
-.mixlist li{border-top:1px solid #f4e2e8}
-.mixlist li:first-child{border-top:0}
-.mixlist a{display:flex;align-items:center;gap:14px;padding:13px 8px;
-  text-decoration:none;color:var(--ink);border-radius:14px;
-  transition:background .3s ease,transform .3s cubic-bezier(.34,1.4,.64,1)}
-.mixlist a:hover{background:rgba(255,255,255,.9);transform:translateX(4px)}
-.mixlist .n{flex:0 0 auto;font-size:.8rem;letter-spacing:.14em;color:var(--rose);
-  font-variant-numeric:tabular-nums}
-.mixlist .t{flex:1 1 auto;font-size:clamp(1.02rem,3vw,1.2rem);line-height:1.3}
-.mixlist .t small{display:block;font-size:.78rem;color:var(--ink-soft);margin-top:2px}
-/* a little equaliser at the end of each row, each one out of step with the rest */
-.mixlist .bars{flex:0 0 auto;display:flex;align-items:flex-end;gap:2.5px;height:15px;opacity:.55;
-  transition:opacity .3s ease}
-.mixlist a:hover .bars{opacity:1}
-.mixlist .bars i{width:3px;height:35%;border-radius:2px;background:var(--rose-deep);
-  animation:eq 1.1s ease-in-out infinite;animation-delay:var(--d,0s)}
-.mix-note{margin:18px 4px 0;font-size:.84rem;color:var(--ink-soft);opacity:.9}
+.songcard .cover{flex:0 0 auto;width:64px;height:64px;border-radius:9px;overflow:hidden;
+  background:#fff;box-shadow:0 6px 14px rgba(0,0,0,.28)}
+.songcard .cover svg{display:block;width:100%;height:100%}
+.songcard .meta{flex:1 1 auto;min-width:0;text-align:left}
+.songcard .st{display:block;font-size:clamp(.98rem,2.6vw,1.12rem);line-height:1.25;
+  font-weight:700;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songcard .sa{display:flex;align-items:center;gap:7px;margin-top:5px;
+  font-size:.74rem;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;opacity:.95}
+.songcard .pv{flex:0 0 auto;font-size:.6rem;font-weight:700;letter-spacing:.02em;
+  padding:2.5px 7px;border-radius:4px;background:rgba(255,255,255,.92);color:#222}
+.songcard .who{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.songcard .save{display:flex;align-items:center;gap:7px;margin-top:8px;
+  font-size:.72rem;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;opacity:.9}
+.songcard .save svg{flex:0 0 auto}
+.songcard .play{flex:0 0 auto;width:38px;height:38px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;align-self:flex-end;
+  box-shadow:0 6px 14px rgba(0,0,0,.3);
+  transition:transform .3s cubic-bezier(.34,1.5,.64,1)}
+.songcard:hover .play{transform:scale(1.12)}
+.songcard .play svg{display:block;margin-left:2px}
+.mix-note{margin:20px 4px 0;font-size:.84rem;color:var(--ink-soft);opacity:.9;
+  text-shadow:0 1px 12px rgba(255,255,255,.95)}
 
 /* ---- the walk: the two of them stroll along the tracklist ---- */
-.walkway{position:relative;height:108px;margin:2px 4px 14px}
+.walkway{position:relative;height:112px;max-width:700px;margin:26px auto 6px}
 .walkpath{position:absolute;left:4%;right:4%;bottom:9px;height:2px;border-radius:2px;
   background:linear-gradient(90deg,transparent,#eccdd9 14%,#eccdd9 86%,transparent)}
 .stone{position:absolute;bottom:1px;transform:translateX(-50%);font-size:13px;line-height:1;
@@ -382,10 +389,7 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
   animation:wnote 2.6s ease-out forwards;pointer-events:none}
 @keyframes wnote{0%{opacity:0;transform:translate(0,6px) rotate(0)}18%{opacity:.9}
   100%{opacity:0;transform:translate(16px,-46px) rotate(16deg)}}
-/* the row they are passing lights up */
-.mixlist a.walk-on{background:rgba(255,255,255,.95)}
-.mixlist a.walk-on .bars{opacity:1}
-.mixlist a.walk-on .n{color:var(--rose-deep)}
+/* (the card they are passing lights up — styled with the cards above) */
 
 /* ============ THE STORY, FRAME BY FRAME ============ */
 #storyScene .wrap{max-width:1180px}
@@ -657,11 +661,19 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   .scene{padding:54px 0}
   .turntable{gap:16px}
   .deck{width:min(56vw,210px)}
-  .tape-card{padding:18px 14px 16px;border-radius:20px}
+  .playlist{grid-template-columns:1fr;gap:18px;max-width:420px}
+  /* one column: no tilt and no offsets, or neighbouring cards collide.
+     The inline scatter wins over custom-property overrides, so replace the
+     whole transform instead. */
+  .songcard{padding:12px 13px;gap:11px;
+    transform:translateY(var(--float,0px))}
+  .songcard:hover{transform:translateY(calc(var(--float,0px) - 4px)) scale(1.015)}
+  .songcard.walk-on{transform:translateY(calc(var(--float,0px) - 4px)) scale(1.02)}
+  .songcard .cover{width:54px;height:54px}
+  .songcard .play{width:32px;height:32px}
   .walkway{height:92px}
   .walkers img{height:62px}
   .walkers img.g{height:58px}
-  .mixlist a{gap:10px;padding:11px 6px}
   .arm-hint{font-size:.54rem}
   .nowplay{font-size:.84rem;padding:8px 13px}
   .np-list span{font-size:.68rem;padding:3px 8px}
@@ -718,53 +730,18 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   </div>
 </section>
 
-<!-- ===== 3a. HER SONGS: the mixtape ===== -->
+<!-- ===== 3a. HER SONGS: the little playlist ===== -->
 <section class="scene" id="mixScene">
   <div class="wrap reveal">
-    <h2 id="mixTitle">The songs you keep playing</h2>
-    <p class="sub" id="mixSub" style="margin-bottom:32px"></p>
+    <h2 class="script" id="mixTitle">our little playlist ♡</h2>
+    <p class="sub" id="mixSub" style="margin-bottom:34px"></p>
 
-    <div class="tape-card">
-      <svg class="cassette" viewBox="0 0 320 200" aria-hidden="true">
-        <rect x="4" y="4" width="312" height="192" rx="16" fill="#8e1f2f"/>
-        <rect x="12" y="12" width="296" height="176" rx="11" fill="#b03047"/>
-        <rect x="30" y="26" width="260" height="96" rx="8" fill="#fdf6f0"/>
-        <rect x="30" y="26" width="260" height="20" rx="8" fill="#f6d7e0"/>
-        <text class="tape-title" x="160" y="41" text-anchor="middle" font-size="13"
-              font-family="Georgia,serif" fill="#8e1f2f" id="tapeLabel">for her · side A</text>
-        <!-- window with the two reels -->
-        <rect x="66" y="54" width="188" height="58" rx="10" fill="#3a2b31"/>
-        <rect x="70" y="58" width="180" height="50" rx="8" fill="#2a1f24"/>
-        <g class="reel" style="--rs:5s">
-          <circle cx="106" cy="83" r="20" fill="#f3dfe6"/>
-          <circle cx="106" cy="83" r="8.5" fill="#3a2b31"/>
-          <g stroke="#c9a7b6" stroke-width="3" stroke-linecap="round">
-            <path d="M106,66 v6"/><path d="M106,94 v6"/><path d="M89,83 h6"/><path d="M123,83 h-6"/>
-            <path d="M94,71 l4,4"/><path d="M118,95 l-4,-4"/><path d="M118,71 l-4,4"/><path d="M94,95 l4,-4"/>
-          </g>
-        </g>
-        <g class="reel" style="--rs:5s">
-          <circle cx="214" cy="83" r="20" fill="#f3dfe6"/>
-          <circle cx="214" cy="83" r="8.5" fill="#3a2b31"/>
-          <g stroke="#c9a7b6" stroke-width="3" stroke-linecap="round">
-            <path d="M214,66 v6"/><path d="M214,94 v6"/><path d="M197,83 h6"/><path d="M231,83 h-6"/>
-            <path d="M202,71 l4,4"/><path d="M226,95 l-4,-4"/><path d="M226,71 l-4,4"/><path d="M202,95 l4,-4"/>
-          </g>
-        </g>
-        <path d="M126,83 h68" stroke="#4a3238" stroke-width="7"/>
-        <rect x="30" y="132" width="260" height="46" rx="8" fill="#fdf6f0" opacity=".9"/>
-        <g fill="#e2c3ce">
-          <circle cx="62" cy="155" r="7"/><circle cx="258" cy="155" r="7"/>
-        </g>
-        <path d="M96,155 h128" stroke="#eccdd9" stroke-width="4" stroke-linecap="round"/>
-      </svg>
+    <div class="playlist" id="mixList"></div>
 
-      <!-- the two of them, strolling from song to song -->
-      <div class="walkway" id="walkway" aria-hidden="true"></div>
+    <!-- the two of them, strolling from song to song -->
+    <div class="walkway" id="walkway" aria-hidden="true"></div>
 
-      <ol class="mixlist" id="mixList"></ol>
-      <p class="mix-note" id="mixNote">Tap any of them — they open where they came from.</p>
-    </div>
+    <p class="mix-note" id="mixNote">Tap any card — it opens where the song lives.</p>
   </div>
 </section>
 
@@ -804,7 +781,6 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
           <span class="np-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
           <span class="np-title" id="npTitle"></span>
         </div>
-        <div class="np-list" id="npList" aria-hidden="true"></div>
       </div>
     </div>
   </div>
@@ -1241,9 +1217,6 @@ scrollTo(0, 0);
    SETTINGS — edit these
    ============================================================ */
 const CONFIG = {
-  // what is printed on the record label while our own pieces are playing
-  song: { title: 'our song', artist: 'for you' },
-
   // Photo for the puzzle: drop your file into photos/ next to index.html.
   // With no file there, a drawn placeholder takes its place.
   photo: 'photos/1.jpg',
@@ -1259,19 +1232,18 @@ const CONFIG = {
     hint:   'move the arm onto the record'
   },
 
-  // HER SONGS — the ones she keeps playing. Titles are shown as written here;
-  // each one links out to where it came from. Add an `artist` if you want one
-  // printed under the title.
+  // HER SONGS — the ones she keeps playing, as a wall of little song cards.
+  // Titles are shown as written here; each card links out to where the song
+  // lives. `color` paints the card; add an `artist` to print one on it.
   herSongs: [
-    { title: '3005',            url: 'https://music.apple.com/kz/album/3005/1771709429?i=1771709728' },
-    { title: 'Fear',            url: 'https://music.apple.com/kz/album/fear/1440881047?i=1440881805' },
-    { title: 'Fantasy',         url: 'https://music.apple.com/kz/album/fantasy/523223736?i=523223738' },
-    { title: "Say It Ain't So", url: 'https://music.apple.com/kz/album/say-it-aint-so/1440869641?i=1440870181' },
-    { title: 'Amoeba',          url: 'https://music.apple.com/kz/album/amoeba/1571215405?i=1571215410' }
+    { title: '3005',            color:'#2f6fd6', url: 'https://music.apple.com/kz/album/3005/1771709429?i=1771709728' },
+    { title: 'Fear',            color:'#5f7d1f', url: 'https://music.apple.com/kz/album/fear/1440881047?i=1440881805' },
+    { title: 'Fantasy',         color:'#c53a32', url: 'https://music.apple.com/kz/album/fantasy/523223736?i=523223738' },
+    { title: "Say It Ain't So", color:'#2456b0', url: 'https://music.apple.com/kz/album/say-it-aint-so/1440869641?i=1440870181' },
+    { title: 'Amoeba',          color:'#7d3fae', url: 'https://music.apple.com/kz/album/amoeba/1571215405?i=1571215410' }
   ],
-  herSongsTitle: 'The songs you keep playing',
-  herSongsSub:   'I wrote every one of them down. I listen to them now too —\nand by now they all sound like you.',
-  tapeLabel:     'for her · side A',
+  herSongsTitle: 'our little playlist ♡',
+  herSongsSub:   'The songs you keep playing. I listen to them now too —\nand by now they all sound like you.',
 
   // THE STORY. Each frame: act — which scene, boy/girl — their lines,
   // cap — the narrator's caption, title — the frame headline (motion graphics),
@@ -1949,7 +1921,6 @@ document.getElementById('openBtn').addEventListener('click', e => {
   document.body.classList.remove('locked');
   opened_ = true;
 
-  MUSIC.start();          // our own pieces, from this tap until the tab closes
   curtainFall();          // the sheet starts coming down
 
   // The swap happens dead centre in the window, once the sheet covers the
@@ -2125,20 +2096,7 @@ document.getElementById('shuffleBtn').addEventListener('click', ()=>{
   order = shuffled(N*N); selected = null; paint();
 });
 
-/* ============================================================
-   MUSIC
 
-   Nothing here is a recording. The player carries several short pieces of
-   its own, each with its own key, tempo and instrument colour, and plays
-   them one after another in a shuffled order that never runs out. One piece
-   resolves, the next one takes over, and after all of them have played the
-   order is shuffled again. That is why the music neither stops nor starts
-   repeating itself.
-
-   Underneath everything sits the record on the turntable: move the tonearm
-   onto it and it plays her song in full, while these pieces duck to silence
-   rather than stopping.
-   ============================================================ */
 const deck = document.getElementById('deck');
 
 /* The label on the disc names the record sitting on the platter; the strip
@@ -2148,6 +2106,7 @@ function setDisc(title, sub){
   document.getElementById('discTitle').textContent  = title;
   document.getElementById('discArtist').textContent = sub || '';
 }
+const IDLE = 'the record is waiting…';
 function setNowPlaying(title){
   const t = document.getElementById('npTitle');
   if (t && t.textContent !== title){
@@ -2155,253 +2114,11 @@ function setNowPlaying(title){
     t.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],
               {duration:520, easing:'cubic-bezier(.22,1,.36,1)'});
   }
-  const list = document.getElementById('npList');
-  if (list) for (const el of list.children) el.classList.toggle('on', el.dataset.name === title);
-}
-function renderTrackList(names){
-  const list = document.getElementById('npList');
-  if (!list) return;
-  list.innerHTML = '';
-  for (const n of names){
-    const el = document.createElement('span');
-    el.dataset.name = n;
-    el.textContent = n;
-    list.appendChild(el);
-  }
 }
 
-const AMBIENT = .24;                       // resting level of our own pieces
-const NOTE_STEPS = { C:0,'C#':1, D:2,'D#':3, E:4, F:5,'F#':6, G:7,'G#':8, A:9,'A#':10, B:11 };
-const hz = n => {
-  const m = /^([A-G]#?)(\d)$/.exec(n);
-  return 440 * Math.pow(2, (NOTE_STEPS[m[1]] - 9)/12 + (+m[2] - 4));
-};
-
-/* Five pieces. Each is a different key and a different colour, so the
-   rotation reads as a small album rather than one loop going round. */
-const PIECES = [
-  { name:'first light', voice:'bell', bpm:62, bars:16, rest:.14,
-    chords:[ { bass:'C3', notes:['C4','E4','G4'] },
-             { bass:'B2', notes:['B3','D4','G4'] },
-             { bass:'A2', notes:['A3','C4','E4'] },
-             { bass:'F2', notes:['A3','C4','F4'] } ],
-    scale:['C5','D5','E5','G5','A5','C6','D6','E6'] },
-
-  { name:'slow dance', voice:'keys', bpm:54, bars:14, rest:.2,
-    chords:[ { bass:'F2',  notes:['F3','A3','C4'] },
-             { bass:'D3',  notes:['F3','A3','D4'] },
-             { bass:'A#2', notes:['F3','A#3','D4'] },
-             { bass:'C3',  notes:['E3','G3','C4'] } ],
-    scale:['F4','G4','A4','C5','D5','F5','G5','A5'] },
-
-  { name:'the long walk home', voice:'pluck', bpm:72, bars:18, rest:.1,
-    chords:[ { bass:'A2', notes:['A3','C4','E4'] },
-             { bass:'F2', notes:['A3','C4','F4'] },
-             { bass:'C3', notes:['G3','C4','E4'] },
-             { bass:'G2', notes:['G3','B3','D4'] } ],
-    scale:['A4','C5','D5','E5','G5','A5','C6','D6'] },
-
-  { name:'three in the morning', voice:'glass', bpm:58, bars:14, rest:.26,
-    chords:[ { bass:'D3',  notes:['D4','F#4','A4'] },
-             { bass:'C#3', notes:['C#4','E4','A4'] },
-             { bass:'B2',  notes:['B3','D4','F#4'] },
-             { bass:'G2',  notes:['B3','D4','G4'] } ],
-    scale:['D5','E5','F#5','A5','B5','D6','E6','F#6'] },
-
-  { name:'you said yes', voice:'bell', bpm:68, bars:16, rest:.1,
-    chords:[ { bass:'G2', notes:['G3','B3','D4'] },
-             { bass:'E2', notes:['G3','B3','E4'] },
-             { bass:'C3', notes:['G3','C4','E4'] },
-             { bass:'D3', notes:['F#3','A3','D4'] } ],
-    scale:['G4','A4','B4','D5','E5','G5','A5','B5'] }
-];
-// note names are for reading; the engine wants hertz
-for (const P of PIECES){
-  for (const c of P.chords){ c.bassHz = hz(c.bass); c.hz = c.notes.map(hz); }
-  P.scaleHz = P.scale.map(hz);
-}
-
-const MUSIC = (() => {
-  const Ctx = window.AudioContext || window.webkitAudioContext;
-  let actx = null, master = null, voices = null, timer = null;
-  let started = false, nextTime = 0, mi = 3;
-  let order = [], pos = 0, pieceBar = 0;
-
-  const P = () => PIECES[order[pos]];
-
-  // a fresh shuffle every lap, and never the same piece twice across the seam
-  function reshuffle(){
-    const last = order.length ? order[order.length-1] : -1;
-    do {
-      order = PIECES.map((_,i)=>i);
-      for (let i=order.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [order[i],order[j]]=[order[j],order[i]]; }
-    } while (order.length > 1 && order[0] === last);
-    pos = 0;
-  }
-  function nextPiece(){
-    pos++;
-    if (pos >= order.length) reshuffle();
-    pieceBar = 0;
-    mi = Math.floor(P().scaleHz.length / 2);
-    announce();
-  }
-  // the label follows the pieces, unless the record has the floor
-  function announce(){
-    if (typeof RECORD !== 'undefined' && RECORD.playing) return;
-    setNowPlaying(P() ? P().name : CONFIG.song.title);
-  }
-
-  function reverb(){
-    const len = Math.floor(actx.sampleRate * 2.8);
-    const buf = actx.createBuffer(2, len, actx.sampleRate);
-    for (let ch=0; ch<2; ch++){
-      const d = buf.getChannelData(ch);
-      for (let i=0;i<len;i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.8);
-    }
-    const c = actx.createConvolver(); c.buffer = buf; return c;
-  }
-
-  /* One note, in the colour of the current piece. A bell rings long and
-     bright, keys are rounder and shorter, a pluck closes its filter as it
-     decays, glass is quiet and hangs in the air. */
-  function note(kind, f, t, gain, dur){
-    const g = actx.createGain();
-    g.gain.setValueAtTime(.0001, t);
-    let out = g, attack = .014;
-    const oscs = [];
-    const add = (type, mul, level) => {
-      const o = actx.createOscillator();
-      o.type = type; o.frequency.value = f * mul;
-      const lv = actx.createGain(); lv.gain.value = level;
-      o.connect(lv); lv.connect(g); oscs.push(o);
-    };
-
-    if (kind === 'bell'){
-      add('sine', 1, 1); add('triangle', 2.006, .14);       // the detune is what shimmers
-    } else if (kind === 'keys'){
-      attack = .028;
-      add('triangle', 1, 1); add('sine', 1.003, .5); add('sine', 2, .08);
-      const lp = actx.createBiquadFilter();
-      lp.type = 'lowpass'; lp.frequency.value = 2300;
-      g.connect(lp); out = lp;
-    } else if (kind === 'pluck'){
-      attack = .005;
-      add('sawtooth', 1, .5); add('triangle', 1.004, .5);
-      const lp = actx.createBiquadFilter();
-      lp.type = 'lowpass';
-      lp.frequency.setValueAtTime(2800, t);
-      lp.frequency.exponentialRampToValueAtTime(520, t + dur*.7);  // the string closing down
-      g.connect(lp); out = lp;
-    } else {                                                 // glass
-      attack = .05;
-      add('sine', 1, 1); add('sine', 3.01, .07); add('sine', 4.98, .03);
-    }
-
-    g.gain.exponentialRampToValueAtTime(gain, t + attack);
-    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    out.connect(voices);
-    for (const o of oscs){ o.start(t); o.stop(t + dur + .08); }
-  }
-
-  // pad: holds the harmony under the melody
-  function pad(f, t, dur, gain){
-    const o = actx.createOscillator(), o2 = actx.createOscillator();
-    const lp = actx.createBiquadFilter(), g = actx.createGain();
-    o.type = 'triangle'; o.frequency.value = f;
-    o2.type = 'sine';    o2.frequency.value = f * 1.004;
-    lp.type = 'lowpass'; lp.frequency.value = 1250;
-    g.gain.setValueAtTime(.0001, t);
-    g.gain.linearRampToValueAtTime(gain, t + dur*.4);
-    g.gain.linearRampToValueAtTime(.0001, t + dur);
-    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(voices);
-    o.start(t); o2.start(t); o.stop(t + dur + .05); o2.stop(t + dur + .05);
-  }
-
-  function bass(f, t, dur){
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.type = 'sine'; o.frequency.value = f;
-    g.gain.setValueAtTime(.0001, t);
-    g.gain.linearRampToValueAtTime(.075, t + .09);
-    g.gain.exponentialRampToValueAtTime(.0001, t + dur);
-    o.connect(g); g.connect(voices);
-    o.start(t); o.stop(t + dur + .05);
-  }
-
-  // one bar of the current piece; returns how long it lasts
-  function playBar(t){
-    const p = P(), BEAT = 60/p.bpm, BAR = BEAT*4;
-    const ch = p.chords[pieceBar % p.chords.length];
-    const S = p.scaleHz;
-
-    bass(ch.bassHz, t, BAR*.95);
-    ch.hz.forEach((f,k)=> pad(f, t + k*.05, BAR*1.05, .034));
-
-    // the melody wanders near its previous note, which makes a line rather than beeps
-    const rhythm = pick([[0,1,2,3],[0,1.5,2.5,3.5],[0,.75,1.5,2.5,3.25],[0,1,1.75,2.75]]);
-    const dur = p.voice === 'pluck' ? [.8,1.6] : p.voice === 'glass' ? [2.8,4.4] : [1.7,2.9];
-    for (const b of rhythm){
-      if (Math.random() < p.rest) continue;                    // rests, so the line can breathe
-      mi = Math.max(0, Math.min(S.length-1, mi + Math.round(rnd(-1.7,1.7))));
-      note(p.voice, S[mi], t + b*BEAT, rnd(.09,.15), rnd(dur[0],dur[1]));
-      if (Math.random() < .16)                                 // an occasional counter-voice a fifth above
-        note(p.voice, S[Math.min(S.length-1, mi+2)], t + b*BEAT + .1, .05, dur[0]);
-    }
-    // the last bar of a piece resolves high, so the handover sounds intended
-    if (pieceBar === p.bars - 1) note(p.voice, S[S.length-2], t + BAR*.6, .08, 3.4);
-
-    pieceBar++;
-    if (pieceBar >= p.bars) nextPiece();
-    return BAR;
-  }
-
-  function tick(){
-    if (!actx) return;
-    // the tab may have been backgrounded and the timer frozen: just carry on from "now"
-    if (nextTime < actx.currentTime) nextTime = actx.currentTime + .12;
-    while (nextTime < actx.currentTime + 1.8) nextTime += playBar(nextTime);
-  }
-
-  function resume(){ if (actx && actx.state === 'suspended') actx.resume(); }
-
-  function start(){
-    if (started || !Ctx) return;
-    started = true;
-    reshuffle();
-    mi = Math.floor(P().scaleHz.length / 2);
-    actx = new Ctx();
-    master = actx.createGain();
-    master.gain.setValueAtTime(.0001, actx.currentTime);
-    master.gain.linearRampToValueAtTime(AMBIENT, actx.currentTime + 4);  // it floats in rather than hitting your ears
-    voices = actx.createGain();
-    const rv = reverb(), rvGain = actx.createGain();
-    rvGain.gain.value = .34;
-    voices.connect(master);
-    voices.connect(rvGain); rvGain.connect(rv); rv.connect(master);
-    master.connect(actx.destination);
-    nextTime = actx.currentTime + .25;
-    tick();
-    timer = setInterval(tick, 260);
-    announce();          // the deck itself stays still: it spins for the record only
-  }
-
-  // while the record plays, these step aside — quietened, never stopped
-  function level(v, sec=1.6){
-    if (!master) return;
-    master.gain.cancelScheduledValues(actx.currentTime);
-    master.gain.setValueAtTime(master.gain.value, actx.currentTime);
-    master.gain.linearRampToValueAtTime(v, actx.currentTime + sec);
-  }
-
-  document.addEventListener('visibilitychange', ()=>{ if (!document.hidden) resume(); });
-  addEventListener('pointerdown', ()=>{ resume(); }, {passive:true});
-
-  return { start, resume, level, announce, names: PIECES.map(p=>p.name), get on(){ return started; } };
-})();
-
-/* THE RECORD. One file, one control: the tonearm. Move the arm onto the disc
-   and the song plays in full — while it does, our own pieces duck to silence
-   underneath rather than stopping, so lifting the arm brings them straight
-   back. The page is never silent, and the two never talk over each other. */
+/* THE RECORD. One file, one control: the tonearm. Move the arm onto the
+   disc and the song plays in full; lift it back to the cradle and the room
+   goes quiet again. There is no other sound on the page. */
 const RECORD = (() => {
   const el = new Audio();
   el.preload = 'auto';
@@ -2418,7 +2135,6 @@ const RECORD = (() => {
     el.volume = 0;
     el.currentTime = 0;
     el.play().then(()=>{
-      MUSIC.level(0, 1.2);                        // our pieces step aside, still running
       const t0 = performance.now();
       const fade = setInterval(()=>{
         const k = Math.min(1, (performance.now()-t0)/1400);
@@ -2429,8 +2145,7 @@ const RECORD = (() => {
     }).catch(()=>{                                 // the file is missing or was refused
       down = false;
       deck.classList.remove('playing');
-      MUSIC.level(AMBIENT, 1.2);
-      MUSIC.announce();
+      setNowPlaying(IDLE);
     });
   }
 
@@ -2442,8 +2157,7 @@ const RECORD = (() => {
       el.volume = Math.max(0, el.volume - .08);
       if (el.volume <= .01){ clearInterval(fade); el.pause(); }
     }, 60);
-    MUSIC.level(AMBIENT, 2);
-    MUSIC.announce();
+    setNowPlaying(IDLE);
   }
 
   return { drop, lift, toggle(){ down ? lift() : drop(); }, get playing(){ return down; } };
@@ -2515,10 +2229,11 @@ const RECORD = (() => {
   });
 })();
 
-/* Her songs, written out the way she plays them */
+/* Her songs, dealt out as a wall of little cards — each in its own bold
+   colour, floating slightly out of step with its neighbours, each one a
+   door to where the song actually lives. */
 (function herSongs(){
   document.getElementById('mixTitle').textContent = CONFIG.herSongsTitle;
-  document.getElementById('tapeLabel').textContent = CONFIG.tapeLabel;
 
   const sub = document.getElementById('mixSub');
   CONFIG.herSongsSub.split('\n').forEach((line, i) => {
@@ -2526,37 +2241,53 @@ const RECORD = (() => {
     sub.appendChild(document.createTextNode(line));
   });
 
-  const ol = document.getElementById('mixList');
+  // scatter: tilt and vertical offset per card, so the wall reads as pinned
+  // up by hand rather than laid out by a machine
+  const SCATTER = [[-1.3, 0], [1.5, 14], [1.1, -4], [-1.7, 8], [-0.9, 2]];
+
+  const grid = document.getElementById('mixList');
   CONFIG.herSongs.forEach((t, i) => {
-    const li = document.createElement('li');
-    const a  = document.createElement('a');
+    const a = document.createElement('a');
+    a.className = 'songcard';
     a.href = t.url; a.target = '_blank'; a.rel = 'noopener';
+    const [tilt, dy] = SCATTER[i % SCATTER.length];
+    const col = t.color || '#d16a89';
+    a.style.cssText =
+      `--c:${col};--cs:${col}66;--tilt:${tilt}deg;--dy:${dy}px;` +
+      `--fd:${(6 + (i%3)*1.3).toFixed(1)}s;--fdl:${(-i*1.7).toFixed(1)}s`;
 
-    const n = document.createElement('span');
-    n.className = 'n';
-    n.textContent = String(i+1).padStart(2, '0');
+    // a drawn cover: one of our flowers on a soft tint of the card colour
+    const cover = document.createElement('span');
+    cover.className = 'cover';
+    cover.style.background = `linear-gradient(140deg,#fff,${col}33)`;
+    cover.innerHTML = POOL[(i*17 + 5) % POOL.length];
 
-    const title = document.createElement('span');
-    title.className = 't';
-    title.textContent = t.title;
-    if (t.artist){
-      const small = document.createElement('small');
-      small.textContent = t.artist;
-      title.appendChild(small);
-    }
+    const meta = document.createElement('span');
+    meta.className = 'meta';
+    const st = document.createElement('span');
+    st.className = 'st'; st.textContent = t.title;
+    const sa = document.createElement('span');
+    sa.className = 'sa';
+    sa.innerHTML = '<span class="pv">Preview</span>';
+    const who = document.createElement('span');
+    who.className = 'who'; who.textContent = t.artist || 'Apple Music';
+    sa.appendChild(who);
+    const save = document.createElement('span');
+    save.className = 'save';
+    save.innerHTML = `<svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+        <circle cx="7.5" cy="7.5" r="6.7" stroke="#fff" stroke-width="1.4"/>
+        <path d="M7.5 4.4v6.2M4.4 7.5h6.2" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+      </svg><span>Save it for us</span>`;
+    meta.append(st, sa, save);
 
-    const bars = document.createElement('span');
-    bars.className = 'bars';
-    // each row hums at its own pace, so the list never pulses in lockstep
-    for (let k=0;k<4;k++){
-      const bar = document.createElement('i');
-      bar.style.setProperty('--d', ((i*.13 + k*.17).toFixed(2)) + 's');
-      bars.appendChild(bar);
-    }
+    const play = document.createElement('span');
+    play.className = 'play';
+    play.innerHTML = `<svg width="14" height="16" viewBox="0 0 14 16" aria-hidden="true">
+        <path d="M1.5 1.6c0-.9 1-1.5 1.8-1L13 7c.8.5.8 1.6 0 2.1L3.3 15.4c-.8.5-1.8-.1-1.8-1V1.6z" fill="#222"/>
+      </svg>`;
 
-    a.append(n, title, bars);
-    li.appendChild(a);
-    ol.appendChild(li);
+    a.append(cover, meta, play);
+    grid.appendChild(a);
   });
 })();
 
@@ -2650,8 +2381,7 @@ const RECORD = (() => {
 
 (function musicUI(){
   setDisc(CONFIG.record.title, CONFIG.record.artist);   // this is the disc on the platter
-  setNowPlaying(CONFIG.song.title);
-  renderTrackList(MUSIC.names);
+  setNowPlaying(IDLE);
 })();
 
 /* ============================================================
