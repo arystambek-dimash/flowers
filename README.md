@@ -2,15 +2,25 @@
 
 A one-page surprise. You press **"Open me"** — flowers come down from the top
 as one solid sheet, cover the screen completely, and when the sheet passes,
-a puzzle made of your photo is already standing behind it. The screen is fully
+he is already standing behind it, waiting to say hello. The screen is fully
 covered at that moment, so the swap is never seen — like a magician with
 a curtain.
+
+**He comes out and says his piece first.** He walks into the little frame from
+off-screen and talks: hey, how are you, wait — let me say my part first, I have
+been getting ready for this day for a long time, I redrew the flowers four times,
+and honestly, right now I am a little nervous. Then the part that matters: that
+she is the most beautiful girl he has ever seen — not only the way she looks, but
+the way she laughs and the way an ordinary Tuesday turns good the moment she is in
+it. Hearts go up past him while he says it. At the end he takes the photo of the
+two of them out of his pocket. His lines type themselves out one letter at a time
+and go on by themselves; a tap puts the line up whole, the next tap moves it on.
 
 And right there, behind the curtain, the downpour ends for good. A garden grows
 in its place: grass along the bottom edge, flowers on stems that open as you
 scroll, and butterflies and bees flying above them. From then on flowers only
-fall in the rare celebratory seconds — when the puzzle is solved, when the heart
-is broken, when she says yes.
+fall in the rare celebratory seconds — when he finishes what he came to say, when
+the heart is broken, when she says yes.
 
 The only sound on the page is **the record**. On the turntable sits a real
 disc, and the tonearm is a real handle: take hold of it, swing it over, and the
@@ -28,9 +38,9 @@ sits up, and the title rides in a little bubble over their heads. Music notes
 and hearts drift up as they go. They walk only while the playlist is on screen,
 and with `prefers-reduced-motion` they simply stand together.
 
-Everything leads itself from there — at her own pace: after the puzzle nothing
-yanks the page anywhere, she sits with the photo as long as she likes and the
-hint points the way on. Below that, the **story
+Everything leads itself from there — at her own pace: when he has said his piece
+nothing yanks the page anywhere, she sits with the photo as long as she likes and
+the hint points the way on. Below that, the **story
 plays out frame by frame**: how she followed first, how he froze for nine days,
 how he finally worked up the nerve, the first date, and how ordinary days became
 shared ones. At the end he says: "there's something I want to tell you" —
@@ -57,13 +67,13 @@ progress bar with a "frame N / 12" readout tracks where you are. The scene is
 alive: trees sway, birds cross the daytime frames while the sun's rays turn,
 fireflies come out in the evening, and a band of foreground grass gives depth.
 
-The characters and the puzzle photo are embedded directly in `index.html`, so
+The characters and the photo are embedded directly in `index.html`, so
 the page works as a single file, without the folder. On reload the page returns
 to the top on its own, back to the "Open me" button. Before the step out into
 real life there is a pause — "close your eyes… one, two, three" — exactly long
 enough to pick up the bouquet. The photo of the two of you is already in
-`photos/1.jpg` and set in the puzzle (the second option is `photos/2.jpg`, swap
-it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
+`photos/1.jpg` and is the one he takes out of his pocket (the second option is
+`photos/2.jpg`, swap it in `CONFIG.photo`). The character sources are `boy_recraft.svg` and
 `girl_recraft.svg`; the transparent versions used on stage are `boy_char.png`
 and `girl_char.png`.
 
@@ -118,9 +128,10 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
 |---|---|
 | **The record** | `CONFIG.record` — the mp3 the tonearm plays, its title and artist, whether it loops, and the nudge printed on the deck. |
 | **Her songs** | `CONFIG.herSongs` — the song cards: a title, a card colour and a link each, plus an optional `artist`. The heading and the line under it are `CONFIG.herSongsTitle` and `CONFIG.herSongsSub`. |
-| **Puzzle photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
+| **His photo** | Put a picture in `photos/` under the name `1` — any extension (`.jpg`, `.jpeg`, `.png`, `.webp`), the page finds the right one. With no file there, a drawn placeholder is shown. Square photos look best. |
+| **The hello** | `CONFIG.hello` — an array of his lines. Each has: `say` — the line itself, `cap` — the narrator's caption under the frame, `wait` — how long the line holds once it has finished typing. Plus: `enter` — he walks into frame, `shy` — he stands there twitching, `hearts` — hearts go up, `photo` — he takes out the photo, `last` — the final line. |
 | **Story** | `CONFIG.story` — an array of frames. Each has: `act` — which scene (1 he is alone, 2 she followed, 3 he walks over, 4 the date, 5–7 together), `boy` and `girl` — their lines, `cap` — the narrator's caption, `title` — the frame headline, `wait` — how long to hold the frame in milliseconds. Plus: `walk` — he is walking, `freeze` — he stands there twitching, `days` — run the day counter, `show` — what to reveal (`notif`, `think`, `sweat`, `days`), `last` — the final frame. |
-| **Puzzle praise** | `CONFIG.puzzleDone` and `CONFIG.puzzleNext`. |
+| **The way on** | `CONFIG.helloNext` — the hint under the frame once he has finished. |
 | **Heart** | `CONFIG.heart` — the heading, the hints, and what to write above the question once the heart is broken. |
 | **Question** | `CONFIG.proposal` — the question itself, the button labels, the excuses of the dodging "no", and what appears after "yes". |
 | **Letter** | `CONFIG.letter` — an array, one line per paragraph. The signature is `CONFIG.signature`. |
@@ -182,8 +193,11 @@ Everything is at the top of the `<script>` in `index.html`, in the `CONFIG` bloc
   after five tries disappears entirely. "Yes" always sits above it in the stacking
   order, so the dodging button can never steal the tap at the moment that counts.
 - **Touches.** A tap anywhere blooms a flower under your finger.
-- **The puzzle** — a 3×3 grid, tiles swap on tap. When it all lines up, the whole
-  photograph fades in over the top.
+- **The hello** — a small frame with a sky, hills and grass, and him walking into
+  it. His line sits in a bubble over the empty half of the frame so long sentences
+  have room; on a phone the bubble drops out of the frame and becomes a line under
+  it instead. The typing is stepped over code points, so an emoji is never cut in
+  half mid-word.
 - **After "yes"** — a salute of flowers and rising hearts, the letter types itself
   out letter by letter, and last of all comes the line addressed to real life.
 

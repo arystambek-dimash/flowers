@@ -162,41 +162,72 @@ h2::after{content:"❀";display:block;margin:10px auto 0;font-size:1rem;color:va
 /* leaves under the curtain: the swap never flashes through a stray gap */
 .fading{opacity:0;transition:opacity .4s ease}
 
-/* ---- puzzle ---- */
-.puzzle-card{background:rgba(255,255,255,.88);backdrop-filter:blur(8px);
-  border:1px solid rgba(255,255,255,.95);border-radius:26px;padding:22px;box-shadow:var(--shadow);
-  max-width:426px;margin:0 auto}
-.board-wrap{position:relative;width:min(100%,380px);aspect-ratio:1;margin:0 auto}
-#board{
-  --n:3;
-  display:grid;grid-template-columns:repeat(var(--n),1fr);gap:6px;
-  width:100%;height:100%;
-  background:#f4dbe4;border-radius:18px;padding:6px;transition:gap .5s ease,padding .5s ease,opacity .5s ease .35s;
-  touch-action:manipulation;
-}
-#board.solved{gap:0;padding:0;opacity:0;pointer-events:none}
-.tile{
-  border-radius:10px;background-size:calc(var(--n)*100%) calc(var(--n)*100%);
-  background-repeat:no-repeat;cursor:pointer;position:relative;
-  transition:transform .18s ease,box-shadow .18s ease,border-radius .5s ease,outline-color .18s;
-  outline:3px solid transparent;outline-offset:-3px;
-}
-#board.solved .tile{border-radius:0;cursor:default;box-shadow:none;outline-color:transparent}
-.tile.sel{outline-color:var(--rose-deep);transform:scale(.94);z-index:2;
-  box-shadow:0 10px 24px -8px rgba(180,80,110,.6)}
-.tile:hover:not(.sel){transform:scale(.975)}
-/* the whole photo fading in over the solved puzzle */
-#solvedImg{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  border-radius:18px;opacity:0;transform:scale(.97);pointer-events:none;
-  transition:opacity .7s ease .25s, transform .7s cubic-bezier(.22,1,.36,1) .25s;
-  box-shadow:0 14px 34px -14px rgba(160,80,110,.55)
-}
-#solvedImg.in{opacity:1;transform:none}
-.puzzle-msg{min-height:1.6em;margin-top:14px;color:var(--rose-deep);font-size:1.05rem;
-  transition:font-size .5s ease}
-.puzzle-msg.big{font-size:clamp(1.15rem,3.8vw,1.5rem);font-style:italic;
-  animation:msg-in .7s cubic-bezier(.34,1.4,.64,1) both}
+/* ---- the hello: he steps out and says it himself ---- */
+.talk-card{position:relative;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.95);border-radius:28px;padding:14px 14px 18px;
+  box-shadow:var(--shadow);max-width:680px;margin:0 auto;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.talk-stage{position:relative;width:100%;aspect-ratio:900/430;border-radius:20px;overflow:hidden;
+  background:linear-gradient(#fff6f8,#fde6ec)}
+.talk-stage svg.talk-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* him: he walks in from off-frame and stands there talking */
+.talk-actor{position:absolute;left:-20%;top:88%;height:62%;transform:translate(-50%,-100%);z-index:2;
+  transition:left 1.5s cubic-bezier(.22,1,.36,1),opacity .8s ease}
+.talk-actor img{display:block;height:100%;width:auto;transform-origin:50% 100%;
+  filter:drop-shadow(0 10px 16px rgba(120,60,90,.28));
+  animation:breathe 3.8s ease-in-out infinite}
+.talk-actor::after{content:"";position:absolute;left:50%;bottom:-1.5%;width:66%;height:4.5%;
+  transform:translateX(-50%);border-radius:50%;background:rgba(90,60,80,.2);filter:blur(3px)}
+.talk-actor.walk img{animation:waddle .48s ease-in-out infinite}
+.talk-actor.shy  img{animation:stutter 3.2s ease-in-out infinite}
+
+/* his line: a bubble over the empty half of the frame, so long lines have room */
+.talk-say{position:absolute;top:30px;left:42%;right:30px;z-index:4;text-align:left;
+  padding:12px 17px;border-radius:20px;color:#fff;
+  background:linear-gradient(135deg,#8e1f2f,#b03047);
+  box-shadow:0 16px 34px -14px rgba(110,20,40,.75);
+  font-size:clamp(.84rem,2.1vw,1.04rem);line-height:1.5;letter-spacing:.01em;
+  opacity:0;transform:translateY(10px) scale(.94);transform-origin:14% 100%;
+  transition:opacity .4s ease,transform .45s cubic-bezier(.34,1.45,.64,1)}
+.talk-say.on{opacity:1;transform:none}
+.talk-say::after{content:"";position:absolute;top:100%;left:11%;
+  border:10px solid transparent;border-top-color:#a02a3f;border-right-width:16px;border-left-width:2px}
+.talk-say .caret{background:#fff;height:1em;vertical-align:-.14em}
+.talk-say:not(.typing) .caret{display:none}      /* the cursor only while he is still saying it */
+
+/* the narrator under the frame */
+.talk-cap{margin:16px auto 0;max-width:34rem;min-height:3.2em;font-style:italic;
+  color:var(--ink-soft);line-height:1.6;font-size:clamp(.95rem,2.7vw,1.1rem);
+  text-shadow:0 1px 12px rgba(255,255,255,.95);
+  opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease}
+.talk-cap.on{opacity:1;transform:none}
+.talk-cap .w{display:inline-block;opacity:0;transform:translateY(9px);
+  animation:win .45s cubic-bezier(.22,1,.36,1) forwards;animation-delay:var(--d,0s)}
+
+/* the photo he keeps in his pocket */
+.talk-photo{position:absolute;right:5%;bottom:9%;width:25%;max-width:170px;z-index:3;
+  padding:6px 6px 20px;background:#fffdf8;border-radius:5px;
+  box-shadow:0 18px 34px -14px rgba(120,50,80,.7);
+  opacity:0;transform:rotate(-7deg) translateY(26px) scale(.82);
+  transition:opacity .7s ease,transform .9s cubic-bezier(.34,1.4,.64,1)}
+.talk-photo.on{opacity:1;transform:rotate(-7deg) translateY(0) scale(1)}
+.talk-photo img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:2px}
+.talk-photo b{position:absolute;left:0;right:0;bottom:4px;font-weight:400;font-style:italic;
+  font-size:.6rem;color:#c07c94;text-align:center}
+
+/* little hearts going up while he says the important part */
+.talk-heart{position:absolute;z-index:3;pointer-events:none;font-size:1.2rem;
+  animation:rise var(--rd,3.6s) ease-out forwards}
+
+/* where we are in what he is saying */
+.talk-dots{display:flex;gap:7px;justify-content:center;margin-top:14px}
+.talk-dots i{width:7px;height:7px;border-radius:50%;background:#eccdd9;display:block;
+  transition:width .4s ease,background .4s ease}
+.talk-dots i.on{width:22px;background:var(--rose-deep)}
+.talk-tap{margin-top:11px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);opacity:.5;transition:opacity .5s ease}
+.talk-tap.dim{opacity:0}
 
 /* ---- music: the turntable ---- */
 .turntable{display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap}
@@ -681,8 +712,15 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   .say{max-width:min(58vw,220px);padding:6px 9px;border-radius:13px;font-size:.72rem;line-height:1.34}
   .stage-frame{padding:6px}
   .cap{min-height:4em}
-  .board-wrap{width:min(100%,300px)}
-  .puzzle-card{padding:16px}
+  /* on a phone the bubble drops out of the frame and becomes a line under it,
+     otherwise a long sentence covers the whole scene */
+  .talk-card{padding:10px 10px 14px;border-radius:22px}
+  .talk-stage{aspect-ratio:16/11}
+  .talk-say{position:static;margin:12px 0 0;text-align:center;padding:10px 13px;
+    border-radius:16px;font-size:.86rem;transform-origin:50% 0}
+  .talk-say::after{display:none}
+  .talk-cap{min-height:4.2em;margin-top:12px}
+  .talk-photo{width:29%;bottom:7%}
   .letter{padding:26px 22px;font-size:1rem}
 }
 @media (prefers-reduced-motion:reduce){
@@ -709,24 +747,113 @@ footer{padding:60px 0 80px;text-align:center;color:var(--ink-soft);font-size:.9r
   </div>
 </section>
 
-<!-- ===== 2. PUZZLE (waiting right behind the downpour) ===== -->
-<section class="scene hidden" id="puzzleScene">
+<!-- ===== 2. THE HELLO (waiting right behind the downpour) ===== -->
+<section class="scene hidden" id="talkScene">
   <div class="wrap reveal">
     <h1 class="script" style="margin-bottom:6px">All of this is for you 🌸</h1>
-    <p class="sub" style="margin-bottom:26px">And under the flowers there is a photo of us.<br>Tap two tiles and they swap places.</p>
+    <p class="sub" style="margin-bottom:26px">But first — let me come out and say it myself.</p>
 
-    <div class="puzzle-card">
-      <div class="board-wrap">
-        <div id="board" aria-label="Puzzle"></div>
-        <img id="solvedImg" alt="">
+    <div class="talk-card" id="talkCard">
+      <div class="talk-stage" id="talkStage">
+        <svg class="talk-svg" viewBox="0 0 900 430" aria-hidden="true">
+          <defs>
+            <linearGradient id="tSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff6f8"/><stop offset="1" stop-color="#fde7ee"/>
+            </linearGradient>
+            <radialGradient id="tSun" cx="50%" cy="50%" r="50%">
+              <stop offset="0" stop-color="#fff3c8"/><stop offset="1" stop-color="#ffe08a" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="tHill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#cfe6bd"/><stop offset="1" stop-color="#a9cf8d"/>
+            </linearGradient>
+          </defs>
+
+          <rect width="900" height="430" fill="url(#tSky)"/>
+
+          <!-- morning sun -->
+          <circle cx="762" cy="74" r="108" fill="url(#tSun)"/>
+          <circle cx="762" cy="74" r="31" fill="#ffeab0" opacity=".92"/>
+
+          <!-- clouds drifting across -->
+          <g fill="#fff" opacity=".8">
+            <g class="cloud" style="--cd:58s">
+              <ellipse cx="120" cy="70" rx="44" ry="18"/><ellipse cx="152" cy="62" rx="31" ry="23"/>
+              <ellipse cx="93" cy="65" rx="26" ry="15"/>
+            </g>
+            <g class="cloud" style="--cd:82s;--cdl:-30s" opacity=".62">
+              <ellipse cx="330" cy="128" rx="36" ry="14"/><ellipse cx="356" cy="121" rx="24" ry="18"/>
+            </g>
+          </g>
+
+          <!-- hills, one behind the other -->
+          <path d="M0 296 C150 254 300 296 460 278 C620 260 760 296 900 272 L900 430 L0 430 Z"
+                fill="#d8eccb" opacity=".9"/>
+          <path d="M0 328 C180 298 330 342 520 320 C700 300 800 334 900 318 L900 430 L0 430 Z"
+                fill="url(#tHill)"/>
+
+          <!-- a couple of trees on the ridge -->
+          <g>
+            <rect x="146" y="268" width="9" height="46" rx="4" fill="#8a6a52"/>
+            <ellipse class="treeTop" cx="150" cy="258" rx="38" ry="33" fill="#9cc684"/>
+            <rect x="836" y="272" width="8" height="42" rx="4" fill="#8a6a52"/>
+            <ellipse class="treeTop" cx="840" cy="262" rx="31" ry="27" fill="#a8ce8f" style="--td:1.4s"/>
+          </g>
+
+          <!-- foreground grass -->
+          <path d="M0 370 C200 356 340 384 540 370 C720 357 800 380 900 368 L900 430 L0 430 Z"
+                fill="#9cc47f"/>
+
+          <!-- flowers in the near grass -->
+          <g stroke-linecap="round" fill="none">
+            <g transform="translate(64,412)">
+              <path d="M0 0 V-34" stroke="#78a061" stroke-width="3.4"/>
+              <g class="treeTop" style="--td:.2s">
+                <circle cx="0" cy="-40" r="9" fill="#f6b6cb"/><circle cx="-9" cy="-34" r="7" fill="#f6b6cb"/>
+                <circle cx="9" cy="-34" r="7" fill="#f6b6cb"/><circle cx="0" cy="-40" r="4" fill="#fff0b8"/>
+              </g>
+            </g>
+            <g transform="translate(112,420)">
+              <path d="M0 0 V-26" stroke="#78a061" stroke-width="3"/>
+              <g class="treeTop" style="--td:1.1s">
+                <circle cx="0" cy="-31" r="7.5" fill="#fff2f6"/><circle cx="0" cy="-31" r="3.4" fill="#f3c96a"/>
+              </g>
+            </g>
+            <g transform="translate(690,416)">
+              <path d="M0 0 V-30" stroke="#78a061" stroke-width="3.2"/>
+              <g class="treeTop" style="--td:.6s">
+                <circle cx="0" cy="-36" r="8.5" fill="#e79ab8"/><circle cx="-8" cy="-31" r="6.5" fill="#e79ab8"/>
+                <circle cx="8" cy="-31" r="6.5" fill="#e79ab8"/><circle cx="0" cy="-36" r="3.6" fill="#fff0b8"/>
+              </g>
+            </g>
+            <g transform="translate(748,424)">
+              <path d="M0 0 V-24" stroke="#78a061" stroke-width="3"/>
+              <g class="treeTop" style="--td:1.8s">
+                <circle cx="0" cy="-29" r="7" fill="#f9d1e0"/><circle cx="0" cy="-29" r="3" fill="#f3c96a"/>
+              </g>
+            </g>
+            <g transform="translate(400,424)">
+              <path d="M0 0 V-22" stroke="#78a061" stroke-width="2.8"/>
+              <g class="treeTop" style="--td:.9s">
+                <circle cx="0" cy="-27" r="6.5" fill="#fff2f6"/><circle cx="0" cy="-27" r="2.8" fill="#f3c96a"/>
+              </g>
+            </g>
+          </g>
+        </svg>
+
+        <!-- the photo he keeps in his pocket -->
+        <figure class="talk-photo" id="talkPhoto"><img alt=""><b>us ♡</b></figure>
+
+        <!-- him -->
+        <div class="talk-actor" id="talkBoy"><img alt="" src=""></div>
       </div>
-      <div class="puzzle-msg" id="puzzleMsg"></div>
+
+      <div class="talk-say" id="talkSay" aria-live="polite"><span class="t"></span><i class="caret"></i></div>
+      <div class="talk-cap" id="talkCap"></div>
+      <div class="talk-dots" id="talkDots" aria-hidden="true"></div>
+      <div class="talk-tap" id="talkTap">tap to hear the next line</div>
     </div>
 
-    <div style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-      <button class="btn ghost" id="shuffleBtn">Shuffle</button>
-    </div>
-    <div class="hint" id="scrollHint"><span>scroll down ↓</span></div>
+    <div class="hint" id="scrollHint" style="opacity:0"><span>scroll down ↓</span></div>
   </div>
 </section>
 
@@ -1217,8 +1344,8 @@ scrollTo(0, 0);
    SETTINGS — edit these
    ============================================================ */
 const CONFIG = {
-  // Photo for the puzzle: drop your file into photos/ next to index.html.
-  // With no file there, a drawn placeholder takes its place.
+  // The photo he pulls out of his pocket while he talks: drop your file into
+  // photos/ next to index.html. With no file there, a drawn placeholder takes its place.
   photo: 'photos/1.jpg',
 
   // THE RECORD on the turntable. Move the tonearm onto it and this file
@@ -1288,9 +1415,42 @@ const CONFIG = {
       boy:'scroll down ↓', girl:'what?', last:true, wait:0 }
   ],
 
-  // what we say once the puzzle is solved
-  puzzleDone: 'I knew you would get it 💗',
-  puzzleNext: 'and now, have a listen…',
+  // THE HELLO. He walks out from behind the flowers and says his piece before
+  // anything else happens. Each beat: say — his line, cap — the narrator under
+  // the frame, wait — how long the line holds once it has finished typing.
+  // Flags: enter — he walks into frame, shy — he stands there twitching,
+  // hearts — little hearts go up, photo — he takes out the photo, last — the end.
+  hello: [
+    { enter:true, say:'hey. hi 🙂 how are you?',
+      cap:'He comes out from behind the flowers. He has been standing back there a while.',
+      wait:2200 },
+
+    { say:'wait — don\'t answer yet. let me say my part first, or i\'ll lose my nerve.',
+      cap:'', wait:2600 },
+
+    { say:'i\'ve been getting ready for this day for a long time.',
+      cap:'Longer than he is going to admit out loud.', wait:2600 },
+
+    { say:'i redrew the flowers four times. picked the songs. rewrote the words about a hundred.',
+      cap:'Every flower on this page was drawn by hand. All of them were drawn for you.',
+      wait:3200 },
+
+    { shy:true, say:'and honestly… right now i\'m a little nervous.',
+      cap:'His hands are shaking a bit. He decides that this is allowed.', wait:2800 },
+
+    { hearts:true, say:'because you should know one thing. you are the most beautiful girl i have ever seen.',
+      cap:'', wait:3400 },
+
+    { hearts:true, say:'and not only the way you look. the way you laugh, the way you say my name, the way an ordinary tuesday turns good the moment you are in it.',
+      cap:'He says it in one breath, so as not to stop halfway.', wait:3800 },
+
+    { photo:true, say:'look. this is us. i keep this one closest.',
+      cap:'A photo out of his pocket, worn a little at the corner.', wait:3200 },
+
+    { last:true, say:'okay. i\'m not stopping now — the rest is waiting just below ↓',
+      cap:'Scroll on. He has been putting the rest of this together for a while.' }
+  ],
+  helloNext: 'and now, have a listen…',
 
   // the heart that has to be broken
   heart: {
@@ -1928,8 +2088,8 @@ document.getElementById('openBtn').addEventListener('click', e => {
   setTimeout(()=>{ document.getElementById('gate').classList.add('fading'); }, 1850);
   setTimeout(()=>{
     document.getElementById('gate').classList.add('hidden');
-    reveal(document.getElementById('puzzleScene'));
-    startPuzzle();
+    reveal(document.getElementById('talkScene'));
+    startHello();
     document.querySelectorAll('.scene').forEach(sec => io.observe(sec));
   }, 2200);
 
@@ -1941,7 +2101,7 @@ document.getElementById('openBtn').addEventListener('click', e => {
 let opened_ = false;
 addEventListener('pointerdown', e => {
   if (!opened_) return;
-  if (e.target.closest('button, a, .tile, iframe, input')) return;
+  if (e.target.closest('button, a, iframe, input')) return;
   bloomAt(e.clientX, e.clientY);
 }, {passive:true});
 
@@ -1966,14 +2126,9 @@ function onScroll(){
 addEventListener('scroll', onScroll, {passive:true});
 
 /* ============================================================
-   PUZZLE
+   THE HELLO — he walks out and says it himself
    ============================================================ */
-const N = 3;                                  // 3x3 grid
-const board  = document.getElementById('board');
-const msgEl  = document.getElementById('puzzleMsg');
-let source   = null;      // image url
-let order    = [];        // order[position] = piece number
-let selected = null;
+let source = null;        // the photo, once we have worked out where it lives
 
 // placeholder until a photo is dropped into photos/
 function placeholder(){
@@ -2016,84 +2171,157 @@ async function resolveSrc(path){
   return PHOTO_DATA || placeholder();
 }
 
-function shuffled(n){
-  let a;
-  do {
-    a = [...Array(n).keys()];
-    for (let i=n-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
-  } while (a.every((v,i)=>v===i));
-  return a;
+const talkCard  = document.getElementById('talkCard');
+const talkStage = document.getElementById('talkStage');
+const talkBoy   = document.getElementById('talkBoy');
+const talkSay   = document.getElementById('talkSay');
+const talkText  = talkSay.querySelector('.t');
+const talkCap   = document.getElementById('talkCap');
+const talkDots  = document.getElementById('talkDots');
+const talkPhoto = document.getElementById('talkPhoto');
+const talkTap   = document.getElementById('talkTap');
+
+let hIdx = -1;              // which line he is on
+let hTimer = null;          // the pause after a finished line
+let sayTimer = null;        // the bubble swapping over to the next line
+let sayStart = null;        // that next line, still waiting its turn
+let typeTimer = null;       // the line being typed out
+let typingDone = null;      // what happens once the typing is over
+let fullLine = '';          // the line in full, for when she taps to skip ahead
+let hDone = false;
+
+/* The line is typed out letter by letter, the way someone works up to
+   saying a thing. Tap while it types and it lands all at once. */
+function typeLine(text, after){
+  clearInterval(typeTimer);
+  talkText.textContent = '';
+  talkSay.classList.add('typing');
+  typingDone = after;
+  fullLine = text;
+  // stepped over code points, so an emoji is never cut in half mid-word
+  const chars = [...text];
+  let i = 0;
+  typeTimer = setInterval(()=>{
+    talkText.textContent = chars.slice(0, ++i).join('');
+    if (i >= chars.length) finishLine();
+  }, CALM ? 4 : 24);
+}
+function finishLine(){
+  clearInterval(typeTimer);
+  typeTimer = null;
+  talkText.textContent = fullLine;
+  talkSay.classList.remove('typing');
+  const done = typingDone;
+  typingDone = null;
+  if (done) done();
 }
 
-function paint(){
-  board.style.setProperty('--n', N);
-  board.innerHTML = '';
-  order.forEach((piece, pos) => {
-    const t = document.createElement('div');
-    t.className = 'tile';
-    t.dataset.pos = pos;
-    const col = piece % N, row = Math.floor(piece / N);
-    t.style.backgroundImage = `url("${source}")`;
-    t.style.backgroundPosition = `${col*100/(N-1)}% ${row*100/(N-1)}%`;
-    t.addEventListener('click', ()=> tap(pos));
-    board.appendChild(t);
-  });
-}
-
-function tap(pos){
-  if (board.classList.contains('solved')) return;
-  const tiles = [...board.children];
-  if (selected === null){
-    selected = pos; tiles[pos].classList.add('sel'); return;
+// a few hearts going up past him while he says the important part
+function heartsUp(){
+  if (CALM) return;
+  for (let k=0;k<6;k++){
+    const h = document.createElement('span');
+    h.className = 'talk-heart';
+    h.textContent = pick(['💗','💖','♥','💕']);
+    h.style.left = (16 + rnd(-6,10)).toFixed(1) + '%';
+    h.style.top  = (48 + rnd(-8,10)).toFixed(1) + '%';
+    h.style.setProperty('--rd', rnd(3,4.6).toFixed(1)+'s');
+    h.style.animationDelay = (k*0.22).toFixed(2)+'s';
+    h.style.fontSize = rnd(.9,1.6).toFixed(2)+'rem';
+    talkStage.appendChild(h);
+    setTimeout(()=>h.remove(), 5600);
   }
-  if (selected === pos){
-    selected = null; tiles[pos].classList.remove('sel'); return;
+}
+
+async function showPhoto(){
+  const img = talkPhoto.querySelector('img');
+  if (!img.src){
+    if (!source) source = await resolveSrc(CONFIG.photo);
+    img.src = source;
   }
-  [order[selected], order[pos]] = [order[pos], order[selected]];
-  const keep = selected; selected = null;
-  paint();
-  [keep,pos].forEach(p=>{
-    board.children[p].animate([{transform:'scale(.86)'},{transform:'scale(1)'}],
-      {duration:260, easing:'cubic-bezier(.34,1.56,.64,1)'});
-  });
-  check();
+  talkPhoto.classList.add('on');
+  bloomShower(6, .8);
 }
 
-function check(){
-  if (!order.every((v,i)=>v===i)) return;
-  const img = document.getElementById('solvedImg');
-  img.src = source;
-  img.classList.add('in');
-  board.classList.add('solved');
-  msgEl.textContent = CONFIG.puzzleDone;
-  msgEl.classList.add('big');
-  burst(60);
-  bloomShower(14, 1);
-  document.getElementById('shuffleBtn').classList.add('hidden');
-
-  const hint = document.getElementById('scrollHint');
-  if (hint){ hint.style.opacity = '1'; hint.querySelector('span').textContent = CONFIG.puzzleNext; }
-
-  // no auto-scroll: she has just solved it — let her sit with the photo
-  // for as long as she likes; the hint below points the way on.
+function setCap(text){
+  talkCap.classList.remove('on');
+  setTimeout(()=>{
+    talkCap.innerHTML = (text||'').split(' ').map((w,k)=>
+      `<span class="w" style="--d:${k*55}ms">${w}</span>`).join(' ');
+    if (text) talkCap.classList.add('on');
+  }, 260);
 }
 
-async function startPuzzle(){
-  if (!source){
-    msgEl.textContent = 'Loading…';
-    source = await resolveSrc(CONFIG.photo);
+function showHello(i){
+  const b = CONFIG.hello[i];
+  if (!b) return;
+  clearTimeout(hTimer);
+  clearTimeout(sayTimer);          // a line still waiting to start must not land on top of this one
+  sayStart = null;
+  clearInterval(typeTimer);
+  typeTimer = null;
+  typingDone = null;
+  hIdx = i;
+
+  // he walks into frame on the very first line and stays put after that
+  if (b.enter){
+    talkBoy.classList.add('walk');
+    requestAnimationFrame(()=>{ talkBoy.style.left = '20%'; });
+    setTimeout(()=>talkBoy.classList.remove('walk'), 1500);
   }
-  order = shuffled(N*N);
-  selected = null;
-  board.classList.remove('solved');
-  document.getElementById('solvedImg').classList.remove('in');
-  msgEl.textContent = '';
-  document.getElementById('shuffleBtn').classList.remove('hidden');
-  paint();
+  talkBoy.classList.toggle('shy', !!b.shy);
+
+  setCap(b.cap);
+  [...talkDots.children].forEach((d,k)=> d.classList.toggle('on', k === i));
+
+  // the old line leaves, the new one comes in and types itself out
+  const wasOn = talkSay.classList.contains('on');
+  talkSay.classList.remove('on');
+  sayStart = ()=>{
+    sayStart = null;
+    talkText.textContent = '';
+    talkSay.classList.add('on');
+    typeLine(b.say, ()=>{
+      if (b.hearts) heartsUp();
+      if (b.photo)  showPhoto();
+      if (b.last){
+        hDone = true;
+        talkTap.classList.add('dim');
+        const hint = document.getElementById('scrollHint');
+        if (hint){
+          hint.style.opacity = '1';
+          hint.querySelector('span').textContent = CONFIG.helloNext;
+        }
+        burst(40);
+        bloomShower(12, 1.2);
+        return;
+      }
+      hTimer = setTimeout(()=>showHello(i+1), b.wait || 2600);
+    });
+  };
+  sayTimer = setTimeout(()=>sayStart && sayStart(), (b.enter ? 1000 : 0) + (wasOn ? 240 : 0));
 }
 
-document.getElementById('shuffleBtn').addEventListener('click', ()=>{
-  order = shuffled(N*N); selected = null; paint();
+function startHello(){
+  if (hIdx >= 0) return;
+  talkBoy.querySelector('img').src = document.querySelector('#boy img').src;
+  talkDots.innerHTML = CONFIG.hello.map(()=>'<i></i>').join('');
+  resolveSrc(CONFIG.photo).then(src => { source = src; });   // ready by the time he needs it
+  showHello(0);
+}
+
+// for the impatient: a tap puts the line up whole, the next tap moves it on
+talkCard.addEventListener('click', ()=>{
+  if (hIdx < 0 || hDone) return;
+  if (sayStart){                       // it had not started yet: say it now, all at once
+    clearTimeout(sayTimer);
+    sayStart();
+    finishLine();
+    return;
+  }
+  if (typeTimer){ finishLine(); return; }
+  clearTimeout(hTimer);
+  showHello(Math.min(hIdx + 1, CONFIG.hello.length - 1));
 });
 
 
